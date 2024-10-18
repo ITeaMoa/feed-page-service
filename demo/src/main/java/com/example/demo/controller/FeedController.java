@@ -65,16 +65,15 @@ public class FeedController {
     }
 }
 
-    //좋아요 엔드포인트
-    @PostMapping("/{feedId}/like")
-public ResponseEntity<String> likeFeed(
-        @PathVariable("feedId") String feedId,
-        @RequestParam("userId") String userId,
-        @RequestParam("feedType") String feedType) { // feedType이 필수 파라미터임
+    //좋아요 엔드포인트 업데이트로 바꿨습니다
+    @PutMapping("/{feedId}/like")
+    public ResponseEntity<String> likeFeed(
+    @PathVariable("feedId") String feedId,
+    @RequestParam("userId") String userId,
+    @RequestParam("feedType") String feedType) {
     feedService.likeFeed(userId, feedId, feedType);
     return ResponseEntity.ok("Like added successfully");
 }
-
        
     
 

@@ -15,6 +15,7 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -40,6 +41,8 @@ public class FeedEntity {
     private String place;
     private Integer period;
     private Integer likesCount;
+    private Map<String, Integer> applyNum;  // 신청자 수를 역할별로 관리할 맵
+    private Map<String, Integer> roles; // 해쉬해쉬
 
     @DynamoDbPartitionKey
     @DynamoDbAttribute("PK")
@@ -128,6 +131,24 @@ public class FeedEntity {
     @DynamoDbAttribute("LikesCount")
     public Integer getLikesCount() {
         return likesCount;
+    }
+
+    @DynamoDbAttribute("Roles")
+    public Map<String, Integer> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Map<String, Integer> roles) {
+        this.roles = roles;
+    }
+    
+    @DynamoDbAttribute("ApplyNum")
+    public Map<String, Integer> getApplyNum() {
+        return applyNum;
+    }
+
+    public void setApplyNum(Map<String, Integer> applyNum) {
+        this.applyNum = applyNum;
     }
 
     // LocalDateTimeConverter 클래스 정의

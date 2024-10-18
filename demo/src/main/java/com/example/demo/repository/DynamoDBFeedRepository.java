@@ -107,5 +107,6 @@ public class DynamoDBFeedRepository implements FeedRepository {
         feedTable.deleteItem(r -> r.key(key)); // 주어진 키에 해당하는 아이템을 삭제
     }
     
+    
 }
 

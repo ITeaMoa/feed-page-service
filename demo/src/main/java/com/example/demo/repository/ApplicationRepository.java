@@ -1,0 +1,28 @@
+package com.example.demo.repository;
+
+import org.springframework.stereotype.Repository;
+
+import com.example.demo.entity.Application;
+
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+
+@Repository
+public class ApplicationRepository {
+     private final DynamoDbTable<Application> applicationTable;
+
+    public ApplicationRepository(DynamoDbClient dynamoDbClient) {
+        DynamoDbEnhancedClient enhancedClient = DynamoDbEnhancedClient.builder()
+                .dynamoDbClient(dynamoDbClient)
+                .build();
+        this.applicationTable = enhancedClient.table("Mytable", TableSchema.fromBean(Application.class));    }
+
+    public void save(Application applicationEntity) {
+        if (applicationEntity.getPk() == null || applicationEntity.getSk() == null) {
+            throw new IllegalArgumentException("pk or sk can not null.");
+        }
+        applicationTable.putItem(applicationEntity);
+    }
+}
