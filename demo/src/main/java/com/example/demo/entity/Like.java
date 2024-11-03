@@ -26,7 +26,7 @@ public class Like {
     private LocalDateTime timestamp;
 
     @DynamoDbPartitionKey
-    @DynamoDbAttribute("PK")
+    @DynamoDbAttribute("Pk")
     public String getPk() {
         return pk;
     }
@@ -36,7 +36,7 @@ public class Like {
     }
 
     @DynamoDbSortKey
-    @DynamoDbAttribute("SK")
+    @DynamoDbAttribute("Sk")
     public String getSk() {
         return sk;
     }

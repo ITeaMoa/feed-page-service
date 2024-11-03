@@ -6,6 +6,7 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbConvertedBy;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondaryPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondarySortKey;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
 import software.amazon.awssdk.enhanced.dynamodb.AttributeConverter;
 import software.amazon.awssdk.enhanced.dynamodb.AttributeValueType;
@@ -27,7 +28,8 @@ public class FeedEntity {
 
     private String pk;
     private String sk;
-    private String entityType; 
+    @Builder.Default
+    private String entityType = "FEED"; 
     private String creatorId;
     private String title;
     private String content;
@@ -41,17 +43,17 @@ public class FeedEntity {
     private String place;
     private Integer period;
     private Integer likesCount;
-    private Map<String, Integer> applyNum;  // 신청자 수를 역할별로 관리할 맵
-    private Map<String, Integer> roles; // 해쉬해쉬
+    private Map<String, Integer> applyNum;  
+    private Map<String, Integer> roles; 
 
     @DynamoDbPartitionKey
-    @DynamoDbAttribute("PK")
+    @DynamoDbAttribute("Pk")
     public String getPk() {
         return pk;
     }
 
     @DynamoDbSortKey
-    @DynamoDbAttribute("SK")
+    @DynamoDbAttribute("Sk")
     public String getSk() {
         return sk;
     }
@@ -61,7 +63,7 @@ public class FeedEntity {
         return entityType;
     }
 
-    @DynamoDbSecondaryPartitionKey(indexNames = {"CreatorID-index"})
+    @DynamoDbSecondaryPartitionKey(indexNames = "PostedFeed-index")
     @DynamoDbAttribute("CreatorID")
     public String getCreatorId() {
         return creatorId;
@@ -77,6 +79,7 @@ public class FeedEntity {
         return content;
     }
 
+    @DynamoDbSecondarySortKey(indexNames = "PostedFeed-index")
     @DynamoDbConvertedBy(LocalDateTimeConverter.class)
     @DynamoDbAttribute("Timestamp")
     public LocalDateTime getTimestamp() {
@@ -88,7 +91,7 @@ public class FeedEntity {
         return postStatus;
     }
 
-    @DynamoDbAttribute("SavedFeed") //임시저장상태
+    @DynamoDbAttribute("SavedFeed") 
     public Boolean getSavedFeed() {
         return savedFeed;
     }
@@ -128,11 +131,11 @@ public class FeedEntity {
         return period;
     }
 
+    @DynamoDbSecondarySortKey(indexNames = "MostLikedFeed-index")
     @DynamoDbAttribute("LikesCount")
     public Integer getLikesCount() {
         return likesCount;
     }
-
     @DynamoDbAttribute("Roles")
     public Map<String, Integer> getRoles() {
         return roles;
@@ -151,13 +154,11 @@ public class FeedEntity {
         this.applyNum = applyNum;
     }
 
-    // LocalDateTimeConverter 클래스 정의
     public static class LocalDateTimeConverter implements AttributeConverter<LocalDateTime> {
-
         @Override
         public AttributeValue transformFrom(LocalDateTime input) {
             if (input == null) {
-                return null; // null 값을 명시적으로 저장하지 않음
+                return null;
             }
             return AttributeValue.builder().s(input.toString()).build();
         }
@@ -180,7 +181,7 @@ public class FeedEntity {
             return AttributeValueType.S;
         }
     }
-
 }
+
 
 

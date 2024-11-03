@@ -13,73 +13,87 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
-@Repository    // aws 다이나모디비를 사용해 피드데이터를 crud하는 클래스입
+
+@Repository
 public class DynamoDBFeedRepository implements FeedRepository {
 
-    private final DynamoDbTable<FeedEntity> feedTable; //다이나모디비테이블
-    private final DynamoDbIndex<FeedEntity> creatorIdIndex; //보조인덱스를 사용한 조회 아직 잘 모르겠음
+    private final DynamoDbTable<FeedEntity> feedTable;
+    private final DynamoDbIndex<FeedEntity> mostLikedFeedIndex;
+    private final DynamoDbIndex<FeedEntity> postedFeedIndex;
 
-    @Value("${dynamodb.table.name}")
-    private String tableName;
-
-    // 생성자에서 DynamoDbClient와 테이블 이름을 받아와 DynamoDB 테이블 및 인덱스 설정
     public DynamoDBFeedRepository(DynamoDbClient dynamoDbClient, @Value("${dynamodb.table.name}") String tableName) {
         DynamoDbEnhancedClient enhancedClient = DynamoDbEnhancedClient.builder()
-                .dynamoDbClient(dynamoDbClient) // DynamoDB 클라이언트를 사용
+                .dynamoDbClient(dynamoDbClient)
                 .build();
-    
+
         this.feedTable = enhancedClient.table(tableName, TableSchema.fromBean(FeedEntity.class));
-        this.creatorIdIndex = feedTable.index("CreatorID-index"); // 보조 인덱스 설정
+        this.mostLikedFeedIndex = feedTable.index("MostLikedFeed-index");
+        this.postedFeedIndex = feedTable.index("PostedFeed-index");
     }
 
     @Override
     public void save(FeedEntity feedEntity) {
-        feedTable.putItem(feedEntity); //피드저장 테이블에 데이터 삽입
+        feedTable.putItem(feedEntity);
     }
 
     @Override
     public FeedEntity findById(String id, String feedType) {
         Key key = Key.builder()
-                .partitionValue("FEED#" + id) //피드의 고유 ID를 기반으로 파티션 키를 설정
-                .sortValue("FEEDTYPE#" + feedType) //피드의 타입을 정렬 키로 사용
+                .partitionValue("FEED#" + id)
+                .sortValue("FEEDTYPE#" + feedType)
                 .build();
-        return feedTable.getItem(r -> r.key(key)); //주어진 키에 해당하는 아이템을 테이블에서 조회
+        return feedTable.getItem(r -> r.key(key));
     }
 
     @Override
     public List<FeedEntity> findAll() {
-        SdkIterable<Page<FeedEntity>> results = feedTable.scan(); // 모든 피드를 스캔
+        SdkIterable<Page<FeedEntity>> results = feedTable.scan();
         List<FeedEntity> feeds = new ArrayList<>();
-        
+
         for (Page<FeedEntity> page : results) {
-            feeds.addAll(page.items()); // 결과 페이지의 모든 항목을 리스트에 추가
+            feeds.addAll(page.items());
         }
 
         return feeds;
     }
 
-    @Override //보조인덱스를 사용해 특정 사용자가 작성한 피드 조회
+    @Override
     public List<FeedEntity> findByUserId(String userId) {
-        QueryConditional queryConditional = QueryConditional.keyEqualTo(Key.builder().partitionValue(userId).build());
+        QueryConditional queryConditional = QueryConditional.keyEqualTo(Key.builder().partitionValue("USER#" + userId).build());
 
-        SdkIterable<Page<FeedEntity>> results = creatorIdIndex.query(queryConditional);
+        SdkIterable<Page<FeedEntity>> results = postedFeedIndex.query(queryConditional);
         List<FeedEntity> items = new ArrayList<>();
 
         for (Page<FeedEntity> page : results) {
             items.addAll(page.items());
         }
 
-        return items;
+    return items;
+}
+
+// 좋아요 순 조회 메서드
+public List<FeedEntity> findMostLikedFeeds() {
+    QueryConditional queryConditional = QueryConditional.keyEqualTo(Key.builder().partitionValue("FEED").build());
+
+    SdkIterable<Page<FeedEntity>> results = mostLikedFeedIndex.query(r -> r.queryConditional(queryConditional).scanIndexForward(false));
+    List<FeedEntity> items = new ArrayList<>();
+
+    for (Page<FeedEntity> page : results) {
+        items.addAll(page.items());
     }
 
-    @Override //사용자가 저장한 피드 필터링해서 조회
+    return items;
+}
+
+    @Override
     public List<FeedEntity> findSavedFeedByUserId(String userId) {
-        QueryConditional queryConditional = QueryConditional.keyEqualTo(Key.builder().partitionValue(userId).build());
+        QueryConditional queryConditional = QueryConditional.keyEqualTo(Key.builder().partitionValue("USER#" + userId).build());
 
         Expression filterExpression = Expression.builder()
-                .expression("SavedFeed = :saved") //true인 항목만 조회되도록 필터링
+                .expression("SavedFeed = :saved")
                 .putExpressionValue(":saved", AttributeValue.builder().bool(true).build())
                 .build();
 
@@ -88,7 +102,7 @@ public class DynamoDBFeedRepository implements FeedRepository {
                 .filterExpression(filterExpression)
                 .build();
 
-        SdkIterable<Page<FeedEntity>> results = creatorIdIndex.query(queryRequest);
+        SdkIterable<Page<FeedEntity>> results = postedFeedIndex.query(queryRequest);
         List<FeedEntity> items = new ArrayList<>();
 
         for (Page<FeedEntity> page : results) {
@@ -104,9 +118,9 @@ public class DynamoDBFeedRepository implements FeedRepository {
                 .partitionValue(feedEntity.getPk())
                 .sortValue(feedEntity.getSk())
                 .build();
-        feedTable.deleteItem(r -> r.key(key)); // 주어진 키에 해당하는 아이템을 삭제
+        feedTable.deleteItem(r -> r.key(key));
     }
-    
-    
 }
+
+
 

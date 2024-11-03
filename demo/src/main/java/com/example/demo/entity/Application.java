@@ -26,7 +26,7 @@ public class Application {
     private LocalDateTime timestamp;  // 신청 시간
 
     @DynamoDbPartitionKey
-    @DynamoDbAttribute("PK")
+    @DynamoDbAttribute("Pk")
     public String getPk() {
         return pk;
     }
@@ -36,7 +36,7 @@ public class Application {
     }
 
     @DynamoDbSortKey
-    @DynamoDbAttribute("SK")
+    @DynamoDbAttribute("Sk")
     public String getSk() {
         return sk;
     }

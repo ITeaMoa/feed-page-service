@@ -19,7 +19,7 @@ public class LikeRepository {
         DynamoDbEnhancedClient enhancedClient = DynamoDbEnhancedClient.builder()
                 .dynamoDbClient(dynamoDbClient)
                 .build();
-        this.likeTable = enhancedClient.table("Mytable", TableSchema.fromBean(Like.class));
+        this.likeTable = enhancedClient.table("IM_MAIN_TB", TableSchema.fromBean(Like.class));
     }
 
     public void save(Like like) {

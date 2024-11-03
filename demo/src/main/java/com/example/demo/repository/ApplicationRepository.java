@@ -17,7 +17,7 @@ public class ApplicationRepository {
         DynamoDbEnhancedClient enhancedClient = DynamoDbEnhancedClient.builder()
                 .dynamoDbClient(dynamoDbClient)
                 .build();
-        this.applicationTable = enhancedClient.table("Mytable", TableSchema.fromBean(Application.class));    }
+        this.applicationTable = enhancedClient.table("IM_MAIN_TB", TableSchema.fromBean(Application.class));    }
 
     public void save(Application applicationEntity) {
         if (applicationEntity.getPk() == null || applicationEntity.getSk() == null) {

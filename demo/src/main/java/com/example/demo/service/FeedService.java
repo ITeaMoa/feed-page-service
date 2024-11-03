@@ -33,6 +33,7 @@ public class FeedService {
     
         // 여기서 feedType을 받아서 명시적으로 SK에 설정
         feedEntity.setSk("FEEDTYPE#" + feedType); 
+        feedEntity.setEntityType("FEED");
     
         feedEntity.setTimestamp(LocalDateTime.now()); // 현재 시간 설정
         feedEntity.setLikesCount(0);  // 좋아요 수 초기화
@@ -47,6 +48,7 @@ public class FeedService {
         if(feedEntity.getRoles() == null) {
             feedEntity.setRoles(new HashMap<>());
         }
+
     
         // 피드 저장
         feedRepository.save(feedEntity);
