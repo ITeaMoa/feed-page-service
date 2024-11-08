@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -27,18 +29,17 @@ public class ApplicationService {
         application.setPk(userPk);  
         application.setSk("APPLICATION#" + feedId);  
         application.setEntityType("Application");  
-        application.setUserID(userPk);  
-        application.setFeedID(feedId);  
         application.setPart(part); 
         application.setStatus("Pending");  // 기본 상태는 'Pending'
         application.setTimestamp(LocalDateTime.now());  
-    
+        application.setName("none");  // name 필드를 "none"으로 설정
        
         applicationRepository.save(application);
     
         // 신청 결과를 피드에 반영 (applyNum 증가)
         feedService.applyToFeed(feedId, part, feedType);  // feedType 추가. 안하고 해볼라 했는데 이상한 오류남..
     }
+    
     
     
 }

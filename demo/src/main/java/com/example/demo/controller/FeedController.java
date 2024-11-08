@@ -4,6 +4,7 @@ import com.example.demo.entity.Comment;
 import com.example.demo.entity.FeedEntity;
 import com.example.demo.service.FeedService;
 
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import java.util.List;
 public class FeedController {
 
     private final FeedService feedService;
+ 
 
     public FeedController(FeedService feedService) {
         this.feedService = feedService;
@@ -26,6 +28,7 @@ public class FeedController {
     @RequestBody FeedEntity feedEntity, //요청본문에서 피드데이터 받고
     @RequestParam("feedType") String feedType) { //피드타입을 요청 매개변수로 받음
         //옵션이나 선택적 정보를 전달 피드타입은 url일부가 아니니까 매게변수 쓰는군
+
     feedService.createFeed(feedEntity, feedType);
     return ResponseEntity.ok("Feed created successfully");
 }

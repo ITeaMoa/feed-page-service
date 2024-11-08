@@ -1,5 +1,8 @@
 package com.example.demo.repository;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Repository;
 
 import com.example.demo.entity.Application;
@@ -8,6 +11,7 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.enhanced.dynamodb.Key;
 
 @Repository
 public class ApplicationRepository {
@@ -25,4 +29,6 @@ public class ApplicationRepository {
         }
         applicationTable.putItem(applicationEntity);
     }
+
+    
 }

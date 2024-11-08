@@ -1,6 +1,9 @@
 package com.example.demo.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.ApplicationDto;
-
+import com.example.demo.entity.Application;
 import com.example.demo.service.ApplicationService;
 
 @RestController
@@ -31,4 +34,5 @@ public class ApplicationController {
 
     return ResponseEntity.ok("신청이 완료됐습니다.");
 }
+
 }

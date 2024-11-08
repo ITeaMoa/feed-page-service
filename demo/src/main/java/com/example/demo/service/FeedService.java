@@ -40,6 +40,8 @@ public class FeedService {
 
         // applyNum을 빈 Map으로 초기화 
         feedEntity.setApplyNum(new HashMap<>()); // 빈 HashMap으로 초기화
+
+        feedEntity.setName("none"); // 기본값 "none" 설정
     
         if (feedEntity.getComments() == null) {
             feedEntity.setComments(new ArrayList<>()); // 댓글 리스트 초기화
@@ -77,6 +79,7 @@ public class FeedService {
             feedEntity.setComments(new ArrayList<>());
         }
     
+        comment.setName("none");
         // 댓글에 현재 시간 추가
         comment.setTimestamp(LocalDateTime.now());
     

@@ -15,6 +15,16 @@ public class Comment {
     private String userId;
     private String comment;
     private LocalDateTime timestamp;
+    private String name = "none";
+
+    @DynamoDbAttribute("name")
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     @DynamoDbAttribute("UserID")
     public String getUserId() {

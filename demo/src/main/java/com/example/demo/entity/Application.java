@@ -19,11 +19,21 @@ public class Application {
     private String pk;   // USER#<UserID>
     private String sk;   // APPLICATION#<FeedID>
     private String entityType = "Application";  // "Application" 설정
-    private String userID; 
-    private String feedID;
+
     private String part;  // 지원 분야
     private String status;  // 지원서 상태 (Pending, Accepted, Rejected)
     private LocalDateTime timestamp;  // 신청 시간
+
+    private String name;
+
+    @DynamoDbAttribute("name")
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     @DynamoDbPartitionKey
     @DynamoDbAttribute("Pk")
@@ -45,23 +55,6 @@ public class Application {
         this.sk = sk;
     }
 
-    @DynamoDbAttribute("UserID")
-    public String getUserID() {
-        return userID;
-    }
-
-    public void setUserID(String userID) {
-        this.userID = userID;
-    }
-
-    @DynamoDbAttribute("FeedID")
-    public String getFeedID() {
-        return feedID;
-    }
-
-    public void setFeedID(String feedID) {
-        this.feedID = feedID;
-    }
 
     @DynamoDbAttribute("Part")
     public String getPart() {

@@ -45,6 +45,16 @@ public class FeedEntity {
     private Integer likesCount;
     private Map<String, Integer> applyNum;  
     private Map<String, Integer> roles; 
+    private String name = "none"; //일단 기본값
+
+    @DynamoDbAttribute("name")
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     @DynamoDbPartitionKey
     @DynamoDbAttribute("Pk")
@@ -58,50 +68,50 @@ public class FeedEntity {
         return sk;
     }
 
-    @DynamoDbAttribute("EntityType")
+    @DynamoDbAttribute("entityType")
     public String getEntityType() {
         return entityType;
     }
 
     @DynamoDbSecondaryPartitionKey(indexNames = "PostedFeed-index")
-    @DynamoDbAttribute("CreatorID")
+    @DynamoDbAttribute("creatorID")
     public String getCreatorId() {
         return creatorId;
     }
 
-    @DynamoDbAttribute("Title")
+    @DynamoDbAttribute("title")
     public String getTitle() {
         return title;
     }
 
-    @DynamoDbAttribute("Content")
+    @DynamoDbAttribute("content")
     public String getContent() {
         return content;
     }
 
     @DynamoDbSecondarySortKey(indexNames = "PostedFeed-index")
     @DynamoDbConvertedBy(LocalDateTimeConverter.class)
-    @DynamoDbAttribute("Timestamp")
+    @DynamoDbAttribute("timestamp")
     public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
-    @DynamoDbAttribute("PostStatus")
+    @DynamoDbAttribute("postStatus")
     public Boolean getPostStatus() {
         return postStatus;
     }
 
-    @DynamoDbAttribute("SavedFeed") 
+    @DynamoDbAttribute("savedFeed") 
     public Boolean getSavedFeed() {
         return savedFeed;
     }
 
-    @DynamoDbAttribute("Tags")
+    @DynamoDbAttribute("tags")
     public List<String> getTags() {
         return tags;
     }
 
-    @DynamoDbAttribute("Comments")
+    @DynamoDbAttribute("comments")
     public List<Comment> getComments() {
         return comments;
     }
@@ -110,33 +120,33 @@ public class FeedEntity {
         this.comments = comments;
     }
 
-    @DynamoDbAttribute("RecruitmentNum")
+    @DynamoDbAttribute("recruitmentNum")
     public Integer getRecruitmentNum() {
         return recruitmentNum;
     }
 
     @DynamoDbConvertedBy(LocalDateTimeConverter.class)
-    @DynamoDbAttribute("Deadline")
+    @DynamoDbAttribute("deadline")
     public LocalDateTime getDeadline() {
         return deadline;
     }
 
-    @DynamoDbAttribute("Place")
+    @DynamoDbAttribute("place")
     public String getPlace() {
         return place;
     }
 
-    @DynamoDbAttribute("Period")
+    @DynamoDbAttribute("period")
     public Integer getPeriod() {
         return period;
     }
 
     @DynamoDbSecondarySortKey(indexNames = "MostLikedFeed-index")
-    @DynamoDbAttribute("LikesCount")
+    @DynamoDbAttribute("likesCount")
     public Integer getLikesCount() {
         return likesCount;
     }
-    @DynamoDbAttribute("Roles")
+    @DynamoDbAttribute("roles")
     public Map<String, Integer> getRoles() {
         return roles;
     }
@@ -145,7 +155,7 @@ public class FeedEntity {
         this.roles = roles;
     }
     
-    @DynamoDbAttribute("ApplyNum")
+    @DynamoDbAttribute("applyNum")
     public Map<String, Integer> getApplyNum() {
         return applyNum;
     }
