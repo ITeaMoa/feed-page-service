@@ -1,5 +1,6 @@
 package com.example.demo.repository;
 
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,9 +10,10 @@ import com.example.demo.entity.Application;
 
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import software.amazon.awssdk.enhanced.dynamodb.Key;
+
 
 @Repository
 public class ApplicationRepository {
@@ -28,6 +30,13 @@ public class ApplicationRepository {
             throw new IllegalArgumentException("pk or sk can not null.");
         }
         applicationTable.putItem(applicationEntity);
+    }
+
+    // 특정 유저의 신청 내역 조회 일단 로그인 안해서 이렇게
+    public List<Application> findByUserPk(String userPk) {
+        return applicationTable.query(r -> r.queryConditional(
+                software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional.keyEqualTo(Key.builder().partitionValue(userPk).build())
+        )).items().stream().collect(Collectors.toList());
     }
 
     

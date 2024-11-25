@@ -2,7 +2,6 @@ package com.example.demo.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -38,6 +37,12 @@ public class ApplicationService {
     
         // 신청 결과를 피드에 반영 (applyNum 증가)
         feedService.applyToFeed(feedId, part, feedType);  // feedType 추가. 안하고 해볼라 했는데 이상한 오류남..
+    }
+
+    // 특정 유저의 신청 내역 조회 일단 로그인 안해서 이렇게
+    public List<Application> getApplicationsByUserId(String userId) {
+        String userPk = "USER#" + userId;
+        return applicationRepository.findByUserPk(userPk);
     }
     
     

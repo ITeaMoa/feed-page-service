@@ -4,8 +4,6 @@ import com.example.demo.entity.Comment;
 import com.example.demo.entity.FeedEntity;
 import com.example.demo.service.FeedService;
 
-
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

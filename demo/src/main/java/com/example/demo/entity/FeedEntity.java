@@ -43,7 +43,7 @@ public class FeedEntity {
     private String place;
     private Integer period;
     private Integer likesCount;
-    private Map<String, Integer> applyNum;  
+    private Map<String, Integer> recruitmentRoles;  
     private Map<String, Integer> roles; 
     private String name = "none"; //일단 기본값
 
@@ -155,13 +155,13 @@ public class FeedEntity {
         this.roles = roles;
     }
     
-    @DynamoDbAttribute("applyNum")
-    public Map<String, Integer> getApplyNum() {
-        return applyNum;
+    @DynamoDbAttribute("recruitmentRoles")
+    public Map<String, Integer> getRecruitmentRoles() {
+        return recruitmentRoles;
     }
 
-    public void setApplyNum(Map<String, Integer> applyNum) {
-        this.applyNum = applyNum;
+    public void setRecruitmentRoles(Map<String, Integer> recruitmentRoles) {
+        this.recruitmentRoles = recruitmentRoles;
     }
 
     public static class LocalDateTimeConverter implements AttributeConverter<LocalDateTime> {

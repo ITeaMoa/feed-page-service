@@ -30,32 +30,29 @@ public class FeedService {
     public void createFeed(FeedEntity feedEntity, String feedType) {
         String feedId = UUID.randomUUID().toString(); // 랜덤 ID 생성
         feedEntity.setPk("FEED#" + feedId); // PK 설정
-    
-        // 여기서 feedType을 받아서 명시적으로 SK에 설정
-        feedEntity.setSk("FEEDTYPE#" + feedType); 
+        feedEntity.setSk("FEEDTYPE#" + feedType); // SK 설정
         feedEntity.setEntityType("FEED");
-    
         feedEntity.setTimestamp(LocalDateTime.now()); // 현재 시간 설정
         feedEntity.setLikesCount(0);  // 좋아요 수 초기화
-
-        // applyNum을 빈 Map으로 초기화 
-        feedEntity.setApplyNum(new HashMap<>()); // 빈 HashMap으로 초기화
-
-        feedEntity.setName("none"); // 기본값 "none" 설정
+        feedEntity.setName("none");  // 기본 닉네임 설정
+    
+        // Roles r기반으로  RecruitmentRoles 초기화
+        Map<String, Integer> recruitmentRoles = new HashMap<>();
+        if (feedEntity.getRoles() != null) {
+            for (String role : feedEntity.getRoles().keySet()) {
+                recruitmentRoles.put(role, 0); // 초기값 0으로 설정
+            }
+        }
+        feedEntity.setRecruitmentRoles(recruitmentRoles); // 
     
         if (feedEntity.getComments() == null) {
             feedEntity.setComments(new ArrayList<>()); // 댓글 리스트 초기화
         }
-
-        if(feedEntity.getRoles() == null) {
-            feedEntity.setRoles(new HashMap<>());
-        }
-
     
         // 피드 저장
         feedRepository.save(feedEntity);
     }
-
+    
 
     // 모든 피드 조회 메서드
     public List<FeedEntity> getAllFeeds() {
@@ -142,13 +139,13 @@ public class FeedService {
             throw new RuntimeException("피드를 찾을 수 없습니다.");
         }
 
-        Map<String, Integer> applyNum = feedEntity.getApplyNum();
-        if (applyNum == null) {
-            applyNum = new HashMap<>(); //신청자수가 없으니 새로운 맵
+        Map<String, Integer> recruitmentRoles = feedEntity.getRecruitmentRoles();
+        if (recruitmentRoles == null) {
+            recruitmentRoles = new HashMap<>(); //신청자수가 없으니 새로운 맵
         }
 
-        applyNum.put(part, applyNum.getOrDefault(part, 0) + 1); //각 파트에 맞는 분야 신청시 추가가 됨
-        feedEntity.setApplyNum(applyNum);
+        recruitmentRoles.put(part, recruitmentRoles.getOrDefault(part, 0) + 1); //각 파트에 맞는 분야 신청시 추가가 됨
+        feedEntity.setRecruitmentRoles(recruitmentRoles);
         feedRepository.save(feedEntity);
     }
     
