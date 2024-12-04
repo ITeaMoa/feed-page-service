@@ -3,8 +3,10 @@ package com.example.demo.service;
 import com.example.demo.entity.Comment;
 import com.example.demo.entity.FeedEntity;
 import com.example.demo.entity.Like;
+import com.example.demo.entity.UserProfile;
 import com.example.demo.repository.FeedRepository;
 import com.example.demo.repository.LikeRepository;
+import com.example.demo.repository.UserProfileRepository;
 
 import org.springframework.stereotype.Service;
 
@@ -20,21 +22,32 @@ import java.util.stream.Collectors;
 public class FeedService {
     private final FeedRepository feedRepository;
     private final LikeRepository likeRepository;
+    private final UserProfileRepository userProfileRepository;
 
-    public FeedService(FeedRepository feedRepository, LikeRepository likeRepository) {
+    public FeedService(FeedRepository feedRepository, LikeRepository likeRepository, UserProfileRepository userProfileRepository) {
         this.feedRepository = feedRepository;
         this.likeRepository = likeRepository;
+        this.userProfileRepository = userProfileRepository;
     }
 
     // 피드 생성 메서드
-    public void createFeed(FeedEntity feedEntity, String feedType) {
+    public void createFeed(FeedEntity feedEntity, String feedType, String userId) {
         String feedId = UUID.randomUUID().toString(); // 랜덤 ID 생성
         feedEntity.setPk("FEED#" + feedId); // PK 설정
         feedEntity.setSk("FEEDTYPE#" + feedType); // SK 설정
         feedEntity.setEntityType("FEED");
         feedEntity.setTimestamp(LocalDateTime.now()); // 현재 시간 설정
         feedEntity.setLikesCount(0);  // 좋아요 수 초기화
-        feedEntity.setName("none");  // 기본 닉네임 설정
+        feedEntity.setCreatorId(userId); // 유저 ID를 creatorId에 설정
+
+        // creatorId 기반으로 nickname 가져오기
+        String userPk = "USER#" + userId;
+        UserProfile userProfile = userProfileRepository.findById(userPk, "INFO#");
+        if (userProfile != null && userProfile.getNickname() != null) {
+            feedEntity.setNickname(userProfile.getNickname()); // 닉네임 저장
+        } else {
+            feedEntity.setNickname("Unknown"); // 닉네임이 없을 경우 기본값
+        }
     
         // Roles r기반으로  RecruitmentRoles 초기화
         Map<String, Integer> recruitmentRoles = new HashMap<>();

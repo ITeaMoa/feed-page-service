@@ -12,6 +12,7 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 
@@ -32,11 +33,16 @@ public class ApplicationRepository {
         applicationTable.putItem(applicationEntity);
     }
 
-    // 특정 유저의 신청 내역 조회 일단 로그인 안해서 이렇게
-    public List<Application> findByUserPk(String userPk) {
-        return applicationTable.query(r -> r.queryConditional(
-                software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional.keyEqualTo(Key.builder().partitionValue(userPk).build())
-        )).items().stream().collect(Collectors.toList());
+   public List<Application> findByUserPk(String userPk) {
+        // QueryConditional을 사용하여 `pk`에 대한 조건 설정
+        QueryConditional queryConditional = QueryConditional.keyEqualTo(k -> k.partitionValue(userPk));
+
+        // 조건에 맞는 항목 조회 및 필터링
+        return applicationTable.query(r -> r.queryConditional(queryConditional))
+                .items()
+                .stream()
+                .filter(item -> item.getSk().startsWith("APPLICATION#")) // `APPLICATION#`으로 필터링
+                .collect(Collectors.toList());
     }
 
     

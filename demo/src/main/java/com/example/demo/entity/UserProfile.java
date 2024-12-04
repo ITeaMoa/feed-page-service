@@ -16,7 +16,7 @@ import java.util.List;
 public class UserProfile {
     private String pk;  
     private String sk;
-    private String name = "none";
+    private String nickname;
     private String avatarUrl;
     private String headLine;
     private List<String> tags;
@@ -36,9 +36,9 @@ public class UserProfile {
         return sk;
     }
 
-    @DynamoDbAttribute("name")
-    public String getName() {
-        return name;
+    @DynamoDbAttribute("nickname") // getter 이름 수정
+    public String getNickname() {
+        return nickname;
     }
     @DynamoDbAttribute("avatarUrl")
     public String getAvatarUrl() {

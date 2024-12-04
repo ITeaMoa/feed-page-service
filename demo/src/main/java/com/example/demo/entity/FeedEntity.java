@@ -45,15 +45,15 @@ public class FeedEntity {
     private Integer likesCount;
     private Map<String, Integer> recruitmentRoles;  
     private Map<String, Integer> roles; 
-    private String name = "none"; //일단 기본값
+    private String nickname;
 
-    @DynamoDbAttribute("name")
-    public String getName() {
-        return name;
+    @DynamoDbAttribute("nickname") // nickname 필드 매핑
+    public String getNickname() {
+        return nickname;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String nickname) {
+        this.nickname = nickname;
     }
 
     @DynamoDbPartitionKey

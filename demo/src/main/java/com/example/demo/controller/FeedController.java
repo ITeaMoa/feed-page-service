@@ -24,10 +24,13 @@ public class FeedController {
     @PostMapping("/create")
     public ResponseEntity<String> createFeed(
     @RequestBody FeedEntity feedEntity, //요청본문에서 피드데이터 받고
-    @RequestParam("feedType") String feedType) { //피드타입을 요청 매개변수로 받음
+    @RequestParam("feedType") String feedType,
+    @RequestParam("userId") String userId // userId 추가
+    ) { //피드타입을 요청 매개변수로 받음
+    
         //옵션이나 선택적 정보를 전달 피드타입은 url일부가 아니니까 매게변수 쓰는군
 
-    feedService.createFeed(feedEntity, feedType);
+    feedService.createFeed(feedEntity, feedType, userId);
     return ResponseEntity.ok("Feed created successfully");
 }
 

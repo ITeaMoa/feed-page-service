@@ -31,7 +31,7 @@ public class ApplicationService {
         application.setPart(part); 
         application.setStatus("Pending");  // 기본 상태는 'Pending'
         application.setTimestamp(LocalDateTime.now());  
-        application.setName("none");  // name 필드를 "none"으로 설정
+
        
         applicationRepository.save(application);
     
