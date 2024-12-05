@@ -18,7 +18,7 @@ public class Application {
 
     private String pk;   // USER#<UserID>
     private String sk;   // APPLICATION#<FeedID>
-    private String entityType = "Application";  // "Application" 설정
+    private String entityType = "APPLICATION";  // "Application" 설정
 
     private String part;  // 지원 분야
     private String status;  // 지원서 상태 (Pending, Accepted, Rejected)
@@ -65,7 +65,7 @@ public class Application {
         this.part = part;
     }
 
-    @DynamoDbAttribute("Status")
+    @DynamoDbAttribute("status")
     public String getStatus() {
         return status;
     }
@@ -74,7 +74,7 @@ public class Application {
         this.status = status;
     }
 
-    @DynamoDbAttribute("Timestamp")
+    @DynamoDbAttribute("timestamp")
     public LocalDateTime getTimestamp() {
         return timestamp;
     }

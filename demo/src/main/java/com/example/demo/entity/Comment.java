@@ -26,7 +26,7 @@ public class Comment {
         this.name = name;
     }
 
-    @DynamoDbAttribute("UserID")
+    @DynamoDbAttribute("userID")
     public String getUserId() {
         return userId;
     }
@@ -35,7 +35,7 @@ public class Comment {
         this.userId = userId;
     }
 
-    @DynamoDbAttribute("Comment")
+    @DynamoDbAttribute("comment")
     public String getComment() {
         return comment;
     }
@@ -45,7 +45,7 @@ public class Comment {
     }
 
     @DynamoDbConvertedBy(LocalDateTimeConverter.class)
-    @DynamoDbAttribute("Timestamp")
+    @DynamoDbAttribute("timestamp")
     public LocalDateTime getTimestamp() {
         return timestamp;
     }

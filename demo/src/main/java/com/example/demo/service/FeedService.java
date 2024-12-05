@@ -124,7 +124,7 @@ public class FeedService {
         Like like = new Like(
             "USER#" + userId,
             "LIKE#" + feedId,
-            "Like",
+            "LIKE",
             feedId,
             LocalDateTime.now()
         );
