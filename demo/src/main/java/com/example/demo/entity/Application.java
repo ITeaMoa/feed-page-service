@@ -56,7 +56,7 @@ public class Application {
     }
 
 
-    @DynamoDbAttribute("Part")
+    @DynamoDbAttribute("part")
     public String getPart() {
         return part;
     }
