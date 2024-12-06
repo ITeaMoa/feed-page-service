@@ -15,18 +15,18 @@ public class Comment {
     private String userId;
     private String comment;
     private LocalDateTime timestamp;
-    private String name = "none";
+    private String nickname;
 
-    @DynamoDbAttribute("name")
-    public String getName() {
-        return name;
+    @DynamoDbAttribute("nickname")
+    public String getNickname() { 
+        return nickname;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setNickname(String nickname) { 
+        this.nickname = nickname;
     }
 
-    @DynamoDbAttribute("UserID")
+    @DynamoDbAttribute("userId")
     public String getUserId() {
         return userId;
     }
@@ -35,7 +35,7 @@ public class Comment {
         this.userId = userId;
     }
 
-    @DynamoDbAttribute("Comment")
+    @DynamoDbAttribute("comment")
     public String getComment() {
         return comment;
     }
@@ -45,7 +45,7 @@ public class Comment {
     }
 
     @DynamoDbConvertedBy(LocalDateTimeConverter.class)
-    @DynamoDbAttribute("Timestamp")
+    @DynamoDbAttribute("timestamp")
     public LocalDateTime getTimestamp() {
         return timestamp;
     }

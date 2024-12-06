@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -38,25 +39,39 @@ public class FeedController {
     // 모든 피드 조회 엔드포인트 성공
     @GetMapping("/feeds-all")
     public ResponseEntity<List<FeedEntity>> getAllFeeds() {
-        List<FeedEntity> feeds = feedService.getAllFeeds(); //모든 피드 조회
+        List<FeedEntity> feeds = feedService.getAllFeeds(); 
         return ResponseEntity.ok(feeds);
     }
 
    
 
-    // 피드에 댓글 추가 엔드포인트
-    @PostMapping("/{feedId}/{feedType}/comments")
-    public ResponseEntity<String> addComment(
-        @PathVariable("feedId") String feedId,  //피드 아이디를 경로변수 url일부로 피드타입과 다름 그래서 경로변수
-        @PathVariable("feedType") String feedType, //타입도 경로변수
-        @RequestBody Comment comment) { //요청본문에서 댓글데이터 받기
-    try {
-        feedService.addComment(feedId, feedType, comment); //아이디 타입 댓글 서비스계층 전달
-        return ResponseEntity.ok("Comment added successfully");
-    } catch (RuntimeException e) {
-        return ResponseEntity.notFound().build();
+    // 피드 댓글 추가 엔드포인트
+@PostMapping("/{feedId}/comments")
+public ResponseEntity<String> addComment(
+        @PathVariable("feedId") String feedId,
+        @RequestParam("feedType") String feedType,
+        @RequestBody Map<String, String> request) {
+
+    String userId = request.get("userId");
+    String commentContent = request.get("comment");
+
+   
+    if (userId == null || commentContent == null) {
+        return ResponseEntity.badRequest().body("유저 ID와 댓글 내용은 필수입니다.");
     }
+
+    // 댓글 생성
+    Comment comment = new Comment();
+    comment.setUserId(userId); //
+    comment.setComment(commentContent);
+
+
+    feedService.addComment(feedId, feedType, comment);
+
+    return ResponseEntity.ok("댓글이 추가되었습니다.");
 }
+
+
 
     // 피드 삭제 엔드포인트 
     @DeleteMapping("/{feedId}/{feedType}")
@@ -83,4 +98,5 @@ public class FeedController {
 
 
 }
+
 

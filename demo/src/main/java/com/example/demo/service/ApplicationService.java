@@ -27,7 +27,7 @@ public class ApplicationService {
         String userPk = "USER#" + userId;  // PK 및 UserID 통일
         application.setPk(userPk);  
         application.setSk("APPLICATION#" + feedId);  
-        application.setEntityType("Application");  
+        application.setEntityType("APPLICATION");  
         application.setPart(part); 
         application.setStatus("Pending");  // 기본 상태는 'Pending'
         application.setTimestamp(LocalDateTime.now());  
