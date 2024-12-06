@@ -33,12 +33,12 @@ public class FeedService {
     // 피드 생성 메서드
     public void createFeed(FeedEntity feedEntity, String feedType, String userId) {
         String feedId = UUID.randomUUID().toString(); // 랜덤 ID 생성
-        feedEntity.setPk("FEED#" + feedId); // PK 설정
-        feedEntity.setSk("FEEDTYPE#" + feedType); // SK 설정
+        feedEntity.setPk("FEED#" + feedId); 
+        feedEntity.setSk("FEEDTYPE#" + feedType);
         feedEntity.setEntityType("FEED");
-        feedEntity.setTimestamp(LocalDateTime.now()); // 현재 시간 설정
-        feedEntity.setLikesCount(0);  // 좋아요 수 초기화
-        feedEntity.setCreatorId(userId); // 유저 ID를 creatorId에 설정
+        feedEntity.setTimestamp(LocalDateTime.now()); 
+        feedEntity.setLikesCount(0);  
+        feedEntity.setCreatorId(userId); 
 
         // creatorId 기반으로 nickname 가져오기
         String userPk = "USER#" + userId;
@@ -53,16 +53,16 @@ public class FeedService {
         Map<String, Integer> recruitmentRoles = new HashMap<>();
         if (feedEntity.getRoles() != null) {
             for (String role : feedEntity.getRoles().keySet()) {
-                recruitmentRoles.put(role, 0); // 초기값 0으로 설정
+                recruitmentRoles.put(role, 0); 
             }
         }
         feedEntity.setRecruitmentRoles(recruitmentRoles); // 
     
         if (feedEntity.getComments() == null) {
-            feedEntity.setComments(new ArrayList<>()); // 댓글 리스트 초기화
+            feedEntity.setComments(new ArrayList<>()); 
         }
     
-        // 피드 저장
+        
         feedRepository.save(feedEntity);
     }
     
@@ -71,34 +71,70 @@ public class FeedService {
     public List<FeedEntity> getAllFeeds() {
         return feedRepository.findAll().stream()
             .filter(feed -> feed.getPk().startsWith("FEED#"))
+            .map(feed -> {
+                if (feed.getComments() != null) {
+                    List<Comment> updatedComments = feed.getComments().stream()
+                        .map(comment -> {
+                            
+                            if (comment.getUserId() != null) {
+                                String userPk = "USER#" + comment.getUserId();
+                                UserProfile userProfile = userProfileRepository.findById(userPk, "INFO#");
+                                if (userProfile != null) {
+                                    comment.setNickname(userProfile.getNickname());
+                                } else {
+                                    comment.setNickname("Unknown");
+                                }
+                            }
+                            return comment;
+                        })
+                        .collect(Collectors.toList());
+                    feed.setComments(updatedComments);
+                }
+                return feed;
+            })
             .collect(Collectors.toList());
     }
+    
+
 
 
     // 피드에 댓글 추가 메서드
     public void addComment(String feedId, String feedType, Comment comment) {
-        // 피드를 feedId와 feedType으로 조회
+       
         FeedEntity feedEntity = feedRepository.findById(feedId, feedType);
-        
         if (feedEntity == null) {
-            throw new RuntimeException("Feed not found");
+            throw new RuntimeException("해당 피드를 찾을 수 없습니다.");
         }
     
-        // 댓글 리스트가 없으면 새 리스트 생성
+       
+        comment.setTimestamp(LocalDateTime.now());
+    
+        
+        String userPk = "USER#" + comment.getUserId();
+        UserProfile userProfile = userProfileRepository.findById(userPk, "INFO#");
+        if (userProfile != null && userProfile.getNickname() != null) {
+            comment.setNickname(userProfile.getNickname());
+        } else {
+            comment.setNickname("Unknown");
+        }
+    
+  
         if (feedEntity.getComments() == null) {
             feedEntity.setComments(new ArrayList<>());
         }
     
-        comment.setName("none");
-        // 댓글에 현재 시간 추가
-        comment.setTimestamp(LocalDateTime.now());
+      
+        if (comment.getUserId() == null) {
+            throw new RuntimeException("userId가 null입니다. 확인이 필요합니다.");
+        }
     
-        // 댓글 리스트에 새로운 댓글 추가
         feedEntity.getComments().add(comment);
     
-        // 피드 엔티티 업데이트
+     
         feedRepository.save(feedEntity);
     }
+    
+    
 
     
 

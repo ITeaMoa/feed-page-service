@@ -15,18 +15,18 @@ public class Comment {
     private String userId;
     private String comment;
     private LocalDateTime timestamp;
-    private String name = "none";
+    private String nickname;
 
-    @DynamoDbAttribute("name")
-    public String getName() {
-        return name;
+    @DynamoDbAttribute("nickname")
+    public String getNickname() { 
+        return nickname;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setNickname(String nickname) { 
+        this.nickname = nickname;
     }
 
-    @DynamoDbAttribute("userID")
+    @DynamoDbAttribute("userId")
     public String getUserId() {
         return userId;
     }
