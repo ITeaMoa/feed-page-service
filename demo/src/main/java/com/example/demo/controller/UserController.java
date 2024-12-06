@@ -21,8 +21,8 @@ public class UserController {
 
     @GetMapping("/{userId}/profile")
     public ResponseEntity<UserProfile> getUserProfile(@PathVariable("userId") String userId) {
-        String pk = "USER#" + userId; // Partition Key
-        String sk = "INFO#"; // Sort Key
+        String pk = "USER#" + userId; 
+        String sk = "INFO#"; 
         UserProfile userProfile = userService.getUserProfile(pk, sk);
 
         if (userProfile == null) {

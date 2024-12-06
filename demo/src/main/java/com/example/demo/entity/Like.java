@@ -21,7 +21,7 @@ public class Like {
 
     private String pk;  // 사용자별로 구분
     private String sk;  // 피드별 구분
-    private String entityType = "Like";  // Like 고정
+    private String entityType = "LIKE";  // 
     private String feedID;
     private LocalDateTime timestamp;
 
@@ -45,7 +45,7 @@ public class Like {
         this.sk = sk;
     }
 
-    @DynamoDbAttribute("FeedID")
+    @DynamoDbAttribute("feedID")
     public String getFeedID() {
         return feedID;
     }
@@ -55,7 +55,7 @@ public class Like {
     }
 
     @DynamoDbConvertedBy(LocalDateTimeConverter.class)
-    @DynamoDbAttribute("Timestamp")
+    @DynamoDbAttribute("timestamp")
     public LocalDateTime getTimestamp() {
         return timestamp;
     }
