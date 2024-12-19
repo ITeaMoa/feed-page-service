@@ -17,7 +17,6 @@ import com.example.demo.entity.Application;
 import com.example.demo.service.ApplicationService;
 
 @RestController
-@RequestMapping("/feeds")
 public class ApplicationController {
     private final ApplicationService applicationService;
     

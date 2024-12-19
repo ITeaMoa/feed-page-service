@@ -12,7 +12,6 @@ import java.util.Map;
 
 
 @RestController
-@RequestMapping("/feeds")
 public class FeedController {
 
     private final FeedService feedService;
