@@ -22,6 +22,11 @@ public class FeedController {
         this.feedService = feedService;
     }
 
+    @GetMapping("/test")
+    public ResponseEntity<String> testEndpoint() {
+        return ResponseEntity.ok("hello feedpage");
+    }
+
     @PostMapping("/create")
     public ResponseEntity<String> createFeed(
     @RequestBody FeedEntity feedEntity, //요청본문에서 피드데이터 받고
@@ -46,8 +51,8 @@ public class FeedController {
    
 
     // 피드 댓글 추가 엔드포인트
-@PostMapping("/{feedId}/comments")
-public ResponseEntity<String> addComment(
+    @PostMapping("/{feedId}/comments")
+    public ResponseEntity<String> addComment(
         @PathVariable("feedId") String feedId,
         @RequestParam("feedType") String feedType,
         @RequestBody Map<String, String> request) {
