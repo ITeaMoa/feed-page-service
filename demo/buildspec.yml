@@ -28,13 +28,14 @@ phases:
 
   build:
     commands:
+      - echo "Starting build process..."
+      - ./gradlew build
+      - echo "Listing build/libs directory..."
+      - ls build/libs
+
       # Set up image repository details
       - IMAGE_REPO_NAME=$AWS_ACCOUNT_ID.dkr.ecr.ap-northeast-2.amazonaws.com/iteamoa/feedpage
       - IMAGE_TAG=latest
-
-      # Verify the JAR file is created
-      - echo "Verifying the JAR file exists..."
-      - ls build/libs
       
       # Build Docker Image
       - echo Build started on `date`
@@ -71,9 +72,9 @@ phases:
 
       # Deploy the latest image to the EKS cluster using Kubernetes manifests
       - echo "Applying deployment and service files to the cluster..."
-      - kubectl apply -f k8s/feed-page-deployment.yaml
-      - kubectl apply -f k8s/feed-service.yaml
-      - kubectl apply -f k8s/ingress.yaml
+      - kubectl apply -f k8s/feed-page-deployment.yaml -n feed-namespace
+      - kubectl apply -f k8s/feed-service.yaml -n feed-namespace
+      - kubectl apply -f k8s/ingress.yaml -n feed-namespace
 
       # Optionally, confirm that the deployment was successful
       - echo "Deployment applied. Verifying pods..."
