@@ -32,10 +32,6 @@ phases:
       - IMAGE_REPO_NAME=$AWS_ACCOUNT_ID.dkr.ecr.ap-northeast-2.amazonaws.com/iteamoa/feedpage
       - IMAGE_TAG=latest
 
-      # Build the JAR file
-      - echo "Building the JAR file with Gradle..."
-      - ./gradlew build -x test  # Skip tests if not needed
-
       # Verify the JAR file is created
       - echo "Verifying the JAR file exists..."
       - ls build/libs
