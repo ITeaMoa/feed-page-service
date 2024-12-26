@@ -28,6 +28,8 @@ phases:
 
   build:
     commands:
+      - cd demo
+      
       - echo "Starting build process..."
       - ./gradlew build
       - echo "Listing build/libs directory..."
