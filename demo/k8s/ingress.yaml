@@ -10,7 +10,7 @@ metadata:
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
     alb.ingress.kubernetes.io/group.name: "backend-api"  
-    alb.ingress.kubernetes.io/healthcheck-path: "/test"
+    alb.ingress.kubernetes.io/healthcheck-path: "/feed/test"
 spec:
   ingressClassName: alb
   rules:
