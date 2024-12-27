@@ -18,23 +18,14 @@ ENV AWS_SECRET_KEY=${AWS_SECRET_KEY}
 
 RUN echo "AWS_TABLE is: ${AWS_TABLE}"
 
-# Copy the Gradle build files to the container
-COPY build.gradle settings.gradle gradlew /app/
-COPY gradle /app/gradle
-COPY src /app/src
+# Set a working directory in the container
+WORKDIR /app
 
-# Grant execution rights to the Gradle wrapper
-RUN chmod +x ./gradlew
+# 애플리케이션 jar 파일을 컨테이너로 복사
+COPY build/libs/demo-0.0.1-SNAPSHOT.jar app.jar
 
-# Build the application JAR using Gradle
-RUN ./gradlew build
+# Expose the port your application will run on
+EXPOSE 8080
 
-# Expose the port that Spring Boot uses (default is 8080)
-# will change after eks cluster added
-EXPOSE 8080 
-
-# Copy the generated JAR file into the container
-COPY build/libs/mainpage-0.0.1-SNAPSHOT.jar /app/mainpage.jar
-
-# Run the Spring Boot application
-ENTRYPOINT ["java", "-jar", "/app/mainpage.jar"]
+# 애플리케이션 실행 명령어 설정
+ENTRYPOINT ["java", "-jar", "app.jar"]
