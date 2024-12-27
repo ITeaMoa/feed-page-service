@@ -1,14 +1,40 @@
-# 베이스 이미지 설정
-FROM openjdk:17-jdk-slim
+# Use an official OpenJDK runtime (Java 17) as the base image for running the Spring Boot app
+# FROM openjdk:17-jdk-slim - 429 Too Many Requests error 때문에 pull resource ecr로 바뀜
+FROM public.ecr.aws/docker/library/openjdk:17-jdk-slim
 
-# Set a working directory in the container
+# Set the working directory inside the container
 WORKDIR /app
 
-# 애플리케이션 jar 파일을 컨테이너로 복사
-COPY build/libs/demo-0.0.1-SNAPSHOT.jar app.jar
+ARG AWS_DEFAULT_REGION
+ARG AWS_TABLE
+ARG AWS_ACCESS_KEY
+ARG AWS_SECRET_KEY
 
-# Expose the port your application will run on
-EXPOSE 8080
+# Set environment variables
+ENV AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
+ENV AWS_TABLE=${AWS_TABLE}
+ENV AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+ENV AWS_SECRET_KEY=${AWS_SECRET_KEY}
 
-# 애플리케이션 실행 명령어 설정
-ENTRYPOINT ["java", "-jar", "app.jar"]
+RUN echo "AWS_TABLE is: ${AWS_TABLE}"
+
+# Copy the Gradle build files to the container
+COPY build.gradle settings.gradle gradlew /app/
+COPY gradle /app/gradle
+COPY src /app/src
+
+# Grant execution rights to the Gradle wrapper
+RUN chmod +x ./gradlew
+
+# Build the application JAR using Gradle
+RUN ./gradlew build
+
+# Expose the port that Spring Boot uses (default is 8080)
+# will change after eks cluster added
+EXPOSE 8080 
+
+# Copy the generated JAR file into the container
+COPY build/libs/mainpage-0.0.1-SNAPSHOT.jar /app/mainpage.jar
+
+# Run the Spring Boot application
+ENTRYPOINT ["java", "-jar", "/app/mainpage.jar"]
