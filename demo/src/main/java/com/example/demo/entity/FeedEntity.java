@@ -74,7 +74,7 @@ public class FeedEntity {
     }
 
     @DynamoDbSecondaryPartitionKey(indexNames = "PostedFeed-index")
-    @DynamoDbAttribute("creatorID")
+    @DynamoDbAttribute("creatorId")
     public String getCreatorId() {
         return creatorId;
     }
