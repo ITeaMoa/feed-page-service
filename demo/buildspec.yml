@@ -78,6 +78,10 @@ phases:
       - kubectl apply -f k8s/feed-service.yaml -n feed-namespace
       - kubectl apply -f k8s/ingress.yaml -n feed-namespace
 
+      # Force a restart to ensure the deployment picks up the new image
+      - echo "Forcing deployment rollout to apply the new image..."
+      - kubectl rollout restart deployment feedpage-service-deployment -n feed-namespace
+
       # Optionally, confirm that the deployment was successful
       - echo "Deployment applied. Verifying pods..."
       - kubectl get pods -n feed-namespace
