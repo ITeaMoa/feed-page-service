@@ -8,6 +8,7 @@ import com.example.demo.repository.FeedRepository;
 import com.example.demo.repository.LikeRepository;
 import com.example.demo.repository.UserProfileRepository;
 
+
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -33,12 +35,22 @@ public class FeedService {
     // 피드 생성 메서드
     public void createFeed(FeedEntity feedEntity, String feedType, String userId) {
         String feedId = UUID.randomUUID().toString(); // 랜덤 ID 생성
+
+       //피드타입 대문자 변환합니다다
+        String formattedFeedType = feedType.toUpperCase();
+
         feedEntity.setPk("FEED#" + feedId); 
-        feedEntity.setSk("FEEDTYPE#" + feedType);
+        feedEntity.setSk("FEEDTYPE#" + formattedFeedType);
         feedEntity.setEntityType("FEED");
         feedEntity.setTimestamp(LocalDateTime.now()); 
         feedEntity.setLikesCount(0);  
-        feedEntity.setCreatorId(userId); 
+
+         // userId를 직접 creatorId로 설정
+    if (userId != null) {
+        feedEntity.setCreatorId(userId);
+    } else {
+        throw new RuntimeException("userId가 null입니다. 확인이 필요합니다.");
+    }
 
         // creatorId 기반으로 nickname 가져오기
         String userPk = "USER#" + userId;
@@ -197,9 +209,31 @@ public class FeedService {
         feedEntity.setRecruitmentRoles(recruitmentRoles);
         feedRepository.save(feedEntity);
     }
+
+    public FeedEntity findFeedByPk(String pk) {
+        // STUDY 타입으로 조회
+        FeedEntity feedEntity = feedRepository.findFeedByPkAndSk(pk, "FEEDTYPE#STUDY");
+        if (feedEntity != null) {
+            return feedEntity;
+        }
+
+        // PROJECT 타입으로 조회
+        feedEntity = feedRepository.findFeedByPkAndSk(pk, "FEEDTYPE#PROJECT");
+        if (feedEntity != null) {
+            return feedEntity;
+        }
+
+        // 둘 다 없으면 null 반환
+        System.err.println("No feed found with PK: " + pk + " and SK: FEEDTYPE#STUDY/PROJECT");
+        return null;
+    }
+    
+    
+    
     
 
 }
+
 
 
 

@@ -1,22 +1,30 @@
 package com.example.demo.service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.example.demo.dto.ApplicationDto;
 import com.example.demo.entity.Application;
+import com.example.demo.entity.FeedEntity;
 import com.example.demo.repository.ApplicationRepository;
+import com.example.demo.repository.FeedRepository;
 
 @Service
 public class ApplicationService {
 
     private final ApplicationRepository applicationRepository;
     private final FeedService feedService;
+    private final FeedRepository feedRepository;
 
-    public ApplicationService(ApplicationRepository applicationRepository, FeedService feedService) {
+    public ApplicationService(ApplicationRepository applicationRepository, FeedService feedService, FeedRepository feedRepository) {
         this.applicationRepository = applicationRepository;
         this.feedService = feedService;
+        this.feedRepository = feedRepository;
     }
 
     
@@ -29,7 +37,7 @@ public class ApplicationService {
         application.setSk("APPLICATION#" + feedId);  
         application.setEntityType("APPLICATION");  
         application.setPart(part); 
-        application.setStatus("Pending");  // 기본 상태는 'Pending'
+        application.setStatus("PENDING");  //기본상태태
         application.setTimestamp(LocalDateTime.now());  
 
        
@@ -40,12 +48,69 @@ public class ApplicationService {
     }
 
     // 특정 유저의 신청 내역 조회 일단 로그인 안해서 이렇게
-    public List<Application> getApplicationsByUserId(String userId) {
+    public List<ApplicationDto> getApplicationsWithFeedInfoByUserId(String userId) {
         String userPk = "USER#" + userId;
-        return applicationRepository.findByUserPk(userPk);
+        List<Application> applications = applicationRepository.findByUserPk(userPk);
+
+        return applications.stream()
+                .map(application -> {
+                    String feedId = application.getSk().replace("APPLICATION#", "");
+                    String feedPk = "FEED#" + feedId;
+
+                    // FeedService를 사용하여 피드 조회
+                    FeedEntity feedEntity = feedService.findFeedByPk(feedPk);
+
+                    if (feedEntity == null) {
+                        return createEmptyApplicationDto(application, feedId);
+                    }
+
+                    return mapToApplicationDto(application, feedEntity);
+                })
+                .collect(Collectors.toList());
+    }
+
+    private ApplicationDto createEmptyApplicationDto(Application application, String feedId) {
+        ApplicationDto dto = new ApplicationDto();
+        dto.setUserId(application.getPk().replace("USER#", ""));
+        dto.setFeedId(feedId);
+        dto.setPart(application.getPart());
+        dto.setStatus(application.getStatus());
+
+        // 피드 관련 정보는 빈 값으로 설정
+        dto.setCreatorId(null);
+        dto.setTitle(null);
+        dto.setContent(null);
+        dto.setTags(null);
+        dto.setRecruitmentNum(null);
+        dto.setDeadline(null);
+        dto.setPeriod(null);
+        dto.setLikesCount(null);
+        dto.setRecruitmentRoles(null);
+        dto.setNickname(null);
+        return dto;
+    }
+
+    private ApplicationDto mapToApplicationDto(Application application, FeedEntity feedEntity) {
+        ApplicationDto dto = new ApplicationDto();
+        dto.setUserId(application.getPk().replace("USER#", ""));
+        dto.setFeedId(application.getSk().replace("APPLICATION#", ""));
+        dto.setPart(application.getPart());
+        dto.setStatus(application.getStatus());
+
+        // FeedEntity 정보 추가
+        dto.setCreatorId(feedEntity.getCreatorId());
+        dto.setTitle(feedEntity.getTitle());
+        dto.setContent(feedEntity.getContent());
+        dto.setTags(feedEntity.getTags());
+        dto.setRecruitmentNum(feedEntity.getRecruitmentNum());
+        dto.setDeadline(feedEntity.getDeadline());
+        dto.setPeriod(feedEntity.getPeriod());
+        dto.setLikesCount(feedEntity.getLikesCount());
+        dto.setRecruitmentRoles(feedEntity.getRecruitmentRoles());
+        dto.setNickname(feedEntity.getNickname());
+        return dto;
     }
     
-    
-    
+
 }
 
