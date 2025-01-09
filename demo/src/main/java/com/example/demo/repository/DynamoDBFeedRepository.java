@@ -120,6 +120,15 @@ public List<FeedEntity> findMostLikedFeeds() {
                 .build();
         feedTable.deleteItem(r -> r.key(key));
     }
+
+    @Override
+    public FeedEntity findFeedByPkAndSk(String pk, String sk) {
+        Key key = Key.builder().partitionValue(pk).sortValue(sk).build();
+        return feedTable.getItem(r -> r.key(key));
+    }
+
+
+
 }
 
 

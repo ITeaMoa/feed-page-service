@@ -11,6 +11,7 @@ public interface FeedRepository {
     List<FeedEntity> findByUserId(String userId);
     List<FeedEntity> findSavedFeedByUserId(String userId);
     void delete(FeedEntity feedEntity);
-
+    FeedEntity findFeedByPkAndSk(String pk, String sk);
+    
 }
 

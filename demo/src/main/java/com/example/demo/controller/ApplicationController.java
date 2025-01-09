@@ -3,6 +3,7 @@ package com.example.demo.controller;
 
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,11 +38,12 @@ public class ApplicationController {
     return ResponseEntity.ok("신청이 완료됐습니다.");
 }
 
+
     // 특정 유저의 신청 내역 조회 엔드포인트
     @GetMapping("/applications")
-    public ResponseEntity<List<Application>> getApplicationsByUserId(@RequestParam("userId") String userId) {
-     List<Application> applications = applicationService.getApplicationsByUserId(userId);
-     return ResponseEntity.ok(applications);
- }
+    public ResponseEntity<List<ApplicationDto>> getApplicationsWithFeedInfoByUserId(@RequestParam("userId") String userId) {
+        List<ApplicationDto> applications = applicationService.getApplicationsWithFeedInfoByUserId(userId);
+        return ResponseEntity.ok(applications);
+    }
 
 }

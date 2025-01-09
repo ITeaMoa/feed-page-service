@@ -24,16 +24,7 @@ public class Application {
     private String status;  // 지원서 상태 (Pending, Accepted, Rejected)
     private LocalDateTime timestamp;  // 신청 시간
 
-    // private String name;
-
-    // @DynamoDbAttribute("name")
-    // public String getName() {
-    //     return name;
-    // }
-
-    // public void setName(String name) {
-    //     this.name = name;
-    // }
+   
 
     @DynamoDbPartitionKey
     @DynamoDbAttribute("Pk")
