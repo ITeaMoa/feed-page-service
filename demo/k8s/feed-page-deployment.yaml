@@ -5,15 +5,18 @@ metadata:
   namespace: feed-namespace  # Match the Fargate namespace
   labels:
     app: fargate
+    svc: feed
 spec:
-  replicas: 1  # Two pods running the service
+  replicas: 1  # pods running the service
   selector:
     matchLabels:
       app: fargate
+      svc: feed
   template:
     metadata:
       labels:
         app: fargate
+        svc: feed
     spec:
       containers:
       - name: feedpage-service

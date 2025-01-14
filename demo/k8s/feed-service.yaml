@@ -6,6 +6,7 @@ metadata:
 spec:
   selector:
     app: fargate
+    svc: feed
   ports:
     - protocol: TCP
       port: 80             # Public-facing port/Service port
