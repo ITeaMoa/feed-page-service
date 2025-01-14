@@ -52,10 +52,11 @@ public class FeedEntity {
         return nickname;
     }
 
-    public void setName(String nickname) {
+    public void setNickname(String nickname) {
         this.nickname = nickname;
     }
 
+    
     @DynamoDbPartitionKey
     @DynamoDbAttribute("Pk")
     public String getPk() {

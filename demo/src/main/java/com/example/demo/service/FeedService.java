@@ -54,7 +54,7 @@ public class FeedService {
 
         // creatorId 기반으로 nickname 가져오기
         String userPk = "USER#" + userId;
-        UserProfile userProfile = userProfileRepository.findById(userPk, "INFO#");
+        UserProfile userProfile = userProfileRepository.findById(userPk, "PROFILE#");
         if (userProfile != null && userProfile.getNickname() != null) {
             feedEntity.setNickname(userProfile.getNickname()); // 닉네임 저장
         } else {
@@ -90,7 +90,7 @@ public class FeedService {
                             
                             if (comment.getUserId() != null) {
                                 String userPk = "USER#" + comment.getUserId();
-                                UserProfile userProfile = userProfileRepository.findById(userPk, "INFO#");
+                                UserProfile userProfile = userProfileRepository.findById(userPk, "PROFILE#");
                                 if (userProfile != null) {
                                     comment.setNickname(userProfile.getNickname());
                                 } else {
@@ -213,20 +213,21 @@ public class FeedService {
     public FeedEntity findFeedByPk(String pk) {
         // STUDY 타입으로 조회
         FeedEntity feedEntity = feedRepository.findFeedByPkAndSk(pk, "FEEDTYPE#STUDY");
-        if (feedEntity != null) {
+        if (feedEntity != null && feedEntity.getNickname() != null) {
             return feedEntity;
         }
-
+    
         // PROJECT 타입으로 조회
         feedEntity = feedRepository.findFeedByPkAndSk(pk, "FEEDTYPE#PROJECT");
-        if (feedEntity != null) {
+        if (feedEntity != null && feedEntity.getNickname() != null) {
             return feedEntity;
         }
-
+    
         // 둘 다 없으면 null 반환
         System.err.println("No feed found with PK: " + pk + " and SK: FEEDTYPE#STUDY/PROJECT");
         return null;
     }
+    
     
     
     

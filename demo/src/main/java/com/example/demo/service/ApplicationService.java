@@ -75,6 +75,7 @@ public class ApplicationService {
         dto.setFeedId(feedId);
         dto.setPart(application.getPart());
         dto.setStatus(application.getStatus());
+        
 
         // 피드 관련 정보는 빈 값으로 설정
         dto.setCreatorId(null);
@@ -107,7 +108,16 @@ public class ApplicationService {
         dto.setPeriod(feedEntity.getPeriod());
         dto.setLikesCount(feedEntity.getLikesCount());
         dto.setRecruitmentRoles(feedEntity.getRecruitmentRoles());
-        dto.setNickname(feedEntity.getNickname());
+
+        //  닉네임 추가 (null 체크)
+        if (feedEntity.getNickname() != null && !feedEntity.getNickname().equals("Unknown")) {
+            dto.setNickname(feedEntity.getNickname());
+        } else {
+            dto.setNickname("Unknown");
+        }
+
+        //  신청 시간 추가
+        dto.setApplicationTimestamp(application.getTimestamp());
         return dto;
     }
     

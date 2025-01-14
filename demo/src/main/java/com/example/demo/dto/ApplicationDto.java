@@ -11,7 +11,7 @@ public class ApplicationDto {
     private String feedId;   
     private String part;
     private String status;
-    // private LocalDateTime applicationTimestamp;
+    private LocalDateTime applicationTimestamp;
 
     private String creatorId;
     private String title;
@@ -130,6 +130,7 @@ public class ApplicationDto {
         return nickname;
     }
 
+
     public void setNickname(String nickname) {
         this.nickname = nickname;
     }
@@ -142,9 +143,13 @@ public class ApplicationDto {
         this.status=status;
     }
 
-    // public void setApplicationTimestamp(LocalDateTime timestamp) {
-        
-    // }
+    public LocalDateTime getApplicationTimestamp() {
+        return applicationTimestamp;
+    }
+
+    public void setApplicationTimestamp(LocalDateTime applicationTimestamp) {
+        this.applicationTimestamp = applicationTimestamp;
+    }
     
    
 }
