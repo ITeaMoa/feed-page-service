@@ -47,7 +47,7 @@ public class FeedService {
 
          // userId를 직접 creatorId로 설정
     if (userId != null) {
-        feedEntity.setCreatorId(userId);
+        feedEntity.setCreatorId("USER#"+userId);
     } else {
         throw new RuntimeException("userId가 null입니다. 확인이 필요합니다.");
     }
