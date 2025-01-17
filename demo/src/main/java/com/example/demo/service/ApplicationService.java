@@ -29,10 +29,22 @@ public class ApplicationService {
 
     
     public void applyToFeed(String userId, String feedId, String part, String feedType) {
+
+        String userPk = "USER#" + userId;
+    String applicationSk = "APPLICATION#" + feedId;
+
+    //이미 신청했는지 확인 코드 추가
+    List<Application> existingApplications = applicationRepository.findByUserPk(userPk);
+    boolean isAlreadyApplied = existingApplications.stream()
+            .anyMatch(app -> app.getSk().equals(applicationSk));
+
+    if (isAlreadyApplied) {
+        throw new RuntimeException("이미 해당 피드에 신청하셨습니다.");
+    }
         // 신청 정보를 저장
         Application application = new Application();
         
-        String userPk = "USER#" + userId;  // PK 및 UserID 통일
+        // String userPk = "USER#" + userId;  // PK 및 UserID 통일
         application.setPk(userPk);  
         application.setSk("APPLICATION#" + feedId);  
         application.setEntityType("APPLICATION");  
@@ -47,7 +59,7 @@ public class ApplicationService {
         feedService.applyToFeed(feedId, part, feedType);  // feedType 추가. 안하고 해볼라 했는데 이상한 오류남..
     }
 
-    // 특정 유저의 신청 내역 조회 일단 로그인 안해서 이렇게
+   
     public List<ApplicationDto> getApplicationsWithFeedInfoByUserId(String userId) {
         String userPk = "USER#" + userId;
         List<Application> applications = applicationRepository.findByUserPk(userPk);
@@ -119,6 +131,29 @@ public class ApplicationService {
         //  신청 시간 추가
         dto.setApplicationTimestamp(application.getTimestamp());
         return dto;
+    }
+
+    public void cancelApplication(String userId, String feedId) {
+        String userPk = "USER#" + userId;
+        String applicationSk = "APPLICATION#" + feedId;
+    
+        //신청정보 조회회
+        List<Application> applications = applicationRepository.findByUserPk(userPk);
+        Application applicationToCancel = applications.stream()
+                .filter(app -> app.getSk().equals(applicationSk))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("신청 내역이 없습니다."));
+    
+        // 신청 상태가 PENDING 상태일 때만 취소 가능
+        if (!"PENDING".equals(applicationToCancel.getStatus())) {
+            throw new RuntimeException("이미 처리된 신청은 취소할 수 없습니다.");
+        }
+    
+      
+        applicationRepository.delete(applicationToCancel);
+    
+        //피드의 신청자 수 감소 
+        feedService.cancelApplicationInFeed(feedId, applicationToCancel.getPart());
     }
     
 

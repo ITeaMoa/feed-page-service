@@ -33,15 +33,22 @@ public class ApplicationRepository {
     }
 
    public List<Application> findByUserPk(String userPk) {
-        // QueryConditional을 사용하여 `pk`에 대한 조건 설정
+        
         QueryConditional queryConditional = QueryConditional.keyEqualTo(k -> k.partitionValue(userPk));
 
-        // 조건에 맞는 항목 조회 및 필터링
+        
         return applicationTable.query(r -> r.queryConditional(queryConditional))
                 .items()
                 .stream()
                 .filter(item -> item.getSk().startsWith("APPLICATION#")) // `APPLICATION#`으로 필터링
                 .collect(Collectors.toList());
+    }
+
+    public void delete(Application applicationEntity) {
+        if (applicationEntity.getPk() == null || applicationEntity.getSk() == null) {
+            throw new IllegalArgumentException("pk or sk can not be null.");
+        }
+        applicationTable.deleteItem(applicationEntity);
     }
 
     

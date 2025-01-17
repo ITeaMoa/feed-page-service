@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,5 +46,14 @@ public class ApplicationController {
         List<ApplicationDto> applications = applicationService.getApplicationsWithFeedInfoByUserId(userId);
         return ResponseEntity.ok(applications);
     }
+
+    @DeleteMapping("/apply-cancel")
+public ResponseEntity<String> cancelApplication(
+    @RequestParam("userId") String userId,
+    @RequestParam("feedId") String feedId
+) {
+    applicationService.cancelApplication(userId, feedId);
+    return ResponseEntity.ok("신청이 성공적으로 취소되었습니다.");
+}
 
 }

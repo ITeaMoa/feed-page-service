@@ -228,6 +228,25 @@ public class FeedService {
         return null;
     }
     
+    public void cancelApplicationInFeed(String feedId, String part) {
+        
+        FeedEntity feedEntity = findFeedByPk("FEED#" + feedId);
+    
+        if (feedEntity == null) {
+            throw new RuntimeException("피드를 찾을 수 없습니다.");
+        }
+    
+        // 신청자 수 감소
+        Map<String, Integer> recruitmentRoles = feedEntity.getRecruitmentRoles();
+        if (recruitmentRoles != null && recruitmentRoles.containsKey(part)) {
+            int currentCount = recruitmentRoles.get(part);
+            recruitmentRoles.put(part, Math.max(currentCount - 1, 0));  // 0 이하로 내려가지 않게
+        }
+    
+        feedEntity.setRecruitmentRoles(recruitmentRoles);
+        feedRepository.save(feedEntity);
+    }
+    
     
     
     
