@@ -87,7 +87,6 @@ public class FeedService {
                 if (feed.getComments() != null) {
                     List<Comment> updatedComments = feed.getComments().stream()
                         .map(comment -> {
-                            
                             if (comment.getUserId() != null) {
                                 String userPk = "USER#" + comment.getUserId();
                                 UserProfile userProfile = userProfileRepository.findById(userPk, "PROFILE#");
@@ -100,12 +99,17 @@ public class FeedService {
                             return comment;
                         })
                         .collect(Collectors.toList());
+    
                     feed.setComments(updatedComments);
+    
+                    
+                    feedRepository.save(feed); 
                 }
                 return feed;
             })
             .collect(Collectors.toList());
     }
+    
     
 
 
@@ -123,7 +127,7 @@ public class FeedService {
     
         
         String userPk = "USER#" + comment.getUserId();
-        UserProfile userProfile = userProfileRepository.findById(userPk, "INFO#");
+        UserProfile userProfile = userProfileRepository.findById(userPk, "PROFILE#");
         if (userProfile != null && userProfile.getNickname() != null) {
             comment.setNickname(userProfile.getNickname());
         } else {
