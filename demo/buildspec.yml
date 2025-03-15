@@ -16,8 +16,6 @@ phases:
       - mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
       - echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
       - source ~/.bashrc
-      - echo 'Check kubectl version'
-      - kubectl version --short --client
     
   pre_build:
     commands:
