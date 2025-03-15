@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -77,9 +76,46 @@ public class FeedService {
         
         feedRepository.save(feedEntity);
     }
+     // 게시물 수정 기능
+     public void updateFeed(String feedId, String feedType, String userId, FeedEntity updatedFeed) {
+        FeedEntity existingFeed = feedRepository.findById(feedId, feedType);
+        if (existingFeed == null) {
+            throw new RuntimeException("해당 피드를 찾을 수 없습니다.");
+        }
     
+        // 작성자 본인인지 확인
+        if (!existingFeed.getCreatorId().equals("USER#" + userId)) {
+            throw new RuntimeException("게시물 수정 권한이 없습니다.");
+        }
+    
+        // 기존 필드를 유지하면서 새로운 데이터 반영
+        existingFeed.setTitle(updatedFeed.getTitle() != null ? updatedFeed.getTitle() : existingFeed.getTitle());
+        existingFeed.setContent(updatedFeed.getContent() != null ? updatedFeed.getContent() : existingFeed.getContent());
+        existingFeed.setTags(updatedFeed.getTags() != null ? updatedFeed.getTags() : existingFeed.getTags());
+        existingFeed.setPeriod(updatedFeed.getPeriod() != null ? updatedFeed.getPeriod() : existingFeed.getPeriod());
+        existingFeed.setDeadline(updatedFeed.getDeadline() != null ? updatedFeed.getDeadline() : existingFeed.getDeadline());
+    
+        feedRepository.save(existingFeed);
+    }
+    
+    // 피드 삭제 메서드
+    public void deleteFeed(String feedId, String feedType, String userId) {
+        // 피드 조회
+        FeedEntity feedEntity = feedRepository.findById(feedId, feedType);
+        if (feedEntity == null) {
+            throw new RuntimeException("해당 피드를 찾을 수 없습니다.");
+        }
+    
+        // 작성자인지 확인
+        if (!feedEntity.getCreatorId().equals("USER#" + userId)) {
+            throw new RuntimeException("게시물 삭제 권한이 없습니다.");
+        }
+    
+        // 삭제 수행
+        feedRepository.delete(feedEntity);
+    }
 
-    // 모든 피드 조회 메서드
+    // 모든 피드 조회 메서드(나만의 테스트트)
     public List<FeedEntity> getAllFeeds() {
         return feedRepository.findAll().stream()
             .filter(feed -> feed.getPk().startsWith("FEED#"))
@@ -112,8 +148,6 @@ public class FeedService {
     
     
 
-
-
     // 피드에 댓글 추가 메서드
     public void addComment(String feedId, String feedType, Comment comment) {
        
@@ -122,7 +156,7 @@ public class FeedService {
             throw new RuntimeException("해당 피드를 찾을 수 없습니다.");
         }
     
-       
+        comment.setCommentId(UUID.randomUUID().toString()); //커멘트아이디 추가
         comment.setTimestamp(LocalDateTime.now());
     
         
@@ -149,20 +183,73 @@ public class FeedService {
      
         feedRepository.save(feedEntity);
     }
-    
-    
-
-    
-
-    // 피드 삭제 메서드
-    public void deleteFeed(String feedId, String feedType) {
-        FeedEntity feedEntity = feedRepository.findById(feedId, feedType);
-        if (feedEntity != null) {
-            feedRepository.delete(feedEntity);
-        } else {
-            throw new RuntimeException("Feed not found");
+    public void updateComment(String feedId, String feedType, String commentId, String userId, String newContent) {
+        if (newContent == null || newContent.trim().isEmpty()) {
+            throw new RuntimeException("수정할 댓글 내용을 입력해주세요.");
         }
+    
+        FeedEntity feedEntity = feedRepository.findById(feedId, feedType);
+        if (feedEntity == null) {
+            throw new RuntimeException("해당 피드를 찾을 수 없습니다.");
+        }
+    
+        List<Comment> comments = feedEntity.getComments();
+        if (comments != null) {
+            for (Comment comment : comments) {
+                if (comment.getCommentId().equals(commentId)) {
+                    // 작성자 확인
+                    if (!comment.getUserId().equals(userId)) {
+                        throw new RuntimeException("댓글 수정 권한이 없습니다.");
+                    }
+    
+                    comment.setComment(newContent);
+                    comment.setTimestamp(LocalDateTime.now());
+    
+                    // 수정된 댓글 리스트를 다시 feedEntity에 설정
+                    feedEntity.setComments(comments);
+                    
+                    feedRepository.save(feedEntity);
+                    return;
+                }
+            }
+        }
+    
+        throw new RuntimeException("해당 댓글을 찾을 수 없습니다.");
     }
+    
+    
+    
+
+    public void deleteComment(String feedId, String feedType, String commentId, String userId) {
+        // 피드 조회
+        FeedEntity feedEntity = feedRepository.findById(feedId, feedType);
+        if (feedEntity == null) {
+            throw new RuntimeException("해당 피드를 찾을 수 없습니다.");
+        }
+    
+        // 댓글 찾기
+        List<Comment> comments = feedEntity.getComments();
+        if (comments == null || comments.isEmpty()) {
+            throw new RuntimeException("해당 게시물에 댓글이 없습니다.");
+        }
+    
+        // 댓글 작성자 확인 후 삭제
+        boolean removed = comments.removeIf(comment -> 
+            comment.getCommentId().equals(commentId) && comment.getUserId().equals(userId)
+        );
+    
+        if (!removed) {
+            throw new RuntimeException("댓글 삭제 권한이 없거나 댓글을 찾을 수 없습니다.");
+        }
+    
+        // 삭제 후 저장
+        feedEntity.setComments(comments);
+        feedRepository.save(feedEntity);
+    }
+    
+    
+
+
 
     public void likeFeed(String userId, String feedId, String feedType) {
         // 좋아요 엔티티 생성

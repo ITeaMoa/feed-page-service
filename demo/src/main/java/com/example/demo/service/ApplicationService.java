@@ -1,9 +1,7 @@
 package com.example.demo.service;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -49,7 +47,7 @@ public class ApplicationService {
         application.setSk("APPLICATION#" + feedId);  
         application.setEntityType("APPLICATION");  
         application.setPart(part); 
-        application.setStatus("PENDING");  //기본상태태
+        application.setStatus("PENDING");  //기본상태
         application.setTimestamp(LocalDateTime.now());  
 
        
@@ -133,11 +131,12 @@ public class ApplicationService {
         return dto;
     }
 
+    //신청취소
     public void cancelApplication(String userId, String feedId) {
         String userPk = "USER#" + userId;
         String applicationSk = "APPLICATION#" + feedId;
     
-        //신청정보 조회회
+        //신청정보 조회
         List<Application> applications = applicationRepository.findByUserPk(userPk);
         Application applicationToCancel = applications.stream()
                 .filter(app -> app.getSk().equals(applicationSk))
@@ -156,6 +155,50 @@ public class ApplicationService {
         feedService.cancelApplicationInFeed(feedId, applicationToCancel.getPart());
     }
     
+    // 수락된 신청목록 조회회
+    public List<ApplicationDto> getAcceptedApplications(String userId) {
+        String userPk = "USER#" + userId;
+        List<Application> applications = applicationRepository.findByUserPk(userPk);
+
+        return applications.stream()
+                .filter(app -> "ACCEPTED".equals(app.getStatus()))  // ACCEPTED 상태만 필터
+                .map(application -> {
+                    String feedId = application.getSk().replace("APPLICATION#", "");
+                    String feedPk = "FEED#" + feedId;
+
+                    
+                    FeedEntity feedEntity = feedService.findFeedByPk(feedPk);
+                    if (feedEntity == null) {
+                        return createEmptyApplicationDto(application, feedId);
+                    }
+
+                    return mapToApplicationDto(application, feedEntity);
+                })
+                .collect(Collectors.toList());
+    }
+
+    // 거절된 신청목록 조회회
+    public List<ApplicationDto> getRejectedApplications(String userId) {
+        String userPk = "USER#" + userId;
+        List<Application> applications = applicationRepository.findByUserPk(userPk);
+
+        return applications.stream()
+                .filter(app -> "REJECTED".equals(app.getStatus()))  // REJECTED 상태만 필터링링링
+                .map(application -> {
+                    String feedId = application.getSk().replace("APPLICATION#", "");
+                    String feedPk = "FEED#" + feedId;
+
+                    
+                    FeedEntity feedEntity = feedService.findFeedByPk(feedPk);
+                    if (feedEntity == null) {
+                        return createEmptyApplicationDto(application, feedId);
+                    }
+
+                    return mapToApplicationDto(application, feedEntity);
+                })
+                .collect(Collectors.toList());
+    }
+
 
 }
 

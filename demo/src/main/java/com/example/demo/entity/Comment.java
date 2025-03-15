@@ -12,11 +12,21 @@ import java.time.LocalDateTime;
 
 @DynamoDbBean
 public class Comment {
+    private String commentId; //필요이유 사용자가 뭔 댓글을 적었는지 구분 필요
     private String userId;
     private String comment;
     private LocalDateTime timestamp;
     private String nickname;
 
+    @DynamoDbAttribute("commentId")  
+    public String getCommentId() {
+        return commentId;
+    }
+
+    public void setCommentId(String commentId) {
+        this.commentId = commentId;
+    }
+    
     @DynamoDbAttribute("nickname")
     public String getNickname() { 
         return nickname;

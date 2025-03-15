@@ -27,6 +27,7 @@ public class FeedController {
         return ResponseEntity.ok("hello feedpage");
     }
 
+    //피드 생성 엔드포인트트
     @PostMapping("/create")
     public ResponseEntity<String> createFeed(
     @RequestBody FeedEntity feedEntity, //요청본문에서 피드데이터 받고
@@ -39,9 +40,36 @@ public class FeedController {
     feedService.createFeed(feedEntity, feedType, userId);
     return ResponseEntity.ok("Feed created successfully");
 }
+    // 피드 삭제 엔드포인트 
+    @DeleteMapping("/{feedId}")
+public ResponseEntity<String> deleteFeed(
+    @PathVariable("feedId") String feedId,
+    @RequestParam("feedType") String feedType,
+    @RequestParam("userId") String userId
+) {
+    try {
+        feedService.deleteFeed(feedId, feedType, userId);
+        return ResponseEntity.ok("Feed deleted successfully");
+    } catch (RuntimeException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+}
+
+@PutMapping("/{feedId}")
+public ResponseEntity<String> updateFeed(
+    @PathVariable("feedId") String feedId,
+    @RequestParam("feedType") String feedType,
+    @RequestParam("userId") String userId,  // 작성자 확인을 위해 추가
+    @RequestBody FeedEntity updatedFeed
+) {
+    feedService.updateFeed(feedId, feedType, userId, updatedFeed);
+    return ResponseEntity.ok("Feed updated successfully");
+}
+
+    
 
 
-    // 모든 피드 조회 엔드포인트 성공
+    // 모든 피드 조회 엔드포인트 성공(나만의 테스트트)
     @GetMapping("/feeds-all")
     public ResponseEntity<List<FeedEntity>> getAllFeeds() {
         List<FeedEntity> feeds = feedService.getAllFeeds(); 
@@ -76,18 +104,34 @@ public class FeedController {
     return ResponseEntity.ok("댓글이 추가되었습니다.");
 }
 
+@PutMapping("/{feedId}/comments/{commentId}")
+public ResponseEntity<String> updateComment(
+    @PathVariable("feedId") String feedId,
+    @RequestParam("feedType") String feedType,
+    @PathVariable("commentId") String commentId,
+    @RequestParam("userId") String userId,
+    @RequestBody Map<String, String> request
+) {
+    String newContent = request.get("newContent");
+    feedService.updateComment(feedId, feedType, commentId, userId, newContent);
+    return ResponseEntity.ok("Comment updated successfully");
+}
 
-
-    // 피드 삭제 엔드포인트 
-    @DeleteMapping("/{feedId}/{feedType}")
-    public ResponseEntity<String> deleteFeed(@PathVariable("feedId") String feedId, @PathVariable("feedType") String feedType) {
+@DeleteMapping("/{feedId}/comments/{commentId}")
+public ResponseEntity<String> deleteComment(
+    @PathVariable("feedId") String feedId,
+    @PathVariable("commentId") String commentId,
+    @RequestParam("feedType") String feedType,
+    @RequestParam("userId") String userId
+) {
     try {
-        feedService.deleteFeed(feedId, feedType);
-        return ResponseEntity.ok("Feed deleted successfully");
+        feedService.deleteComment(feedId, feedType, commentId, userId);
+        return ResponseEntity.ok("Comment deleted successfully");
     } catch (RuntimeException e) {
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
+
 
     //좋아요 엔드포인트 업데이트로 바꿨습니다
     @PutMapping("/{feedId}/like")
