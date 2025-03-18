@@ -46,6 +46,16 @@ public class FeedEntity {
     private Map<String, Integer> recruitmentRoles;  
     private Map<String, Integer> roles; 
     private String nickname;
+    private String userStatus;
+
+    @DynamoDbAttribute("userStatus")
+    public String getUserStatus() {
+        return userStatus;
+    }
+
+    public void setUserStatus(String userStatus) {
+        this.userStatus = userStatus;
+    }
 
     @DynamoDbAttribute("nickname") // nickname 필드 매핑
     public String getNickname() {

@@ -10,25 +10,25 @@ import com.example.demo.dto.ApplicationDto;
 import com.example.demo.entity.Application;
 import com.example.demo.entity.FeedEntity;
 import com.example.demo.repository.ApplicationRepository;
-import com.example.demo.repository.FeedRepository;
+
 
 @Service
 public class ApplicationService {
 
     private final ApplicationRepository applicationRepository;
     private final FeedService feedService;
-    private final FeedRepository feedRepository;
+  
 
-    public ApplicationService(ApplicationRepository applicationRepository, FeedService feedService, FeedRepository feedRepository) {
+    public ApplicationService(ApplicationRepository applicationRepository, FeedService feedService) {
         this.applicationRepository = applicationRepository;
         this.feedService = feedService;
-        this.feedRepository = feedRepository;
+  
     }
 
     
     public void applyToFeed(String userId, String feedId, String part, String feedType) {
 
-        String userPk = "USER#" + userId;
+    String userPk = "USER#" + userId;
     String applicationSk = "APPLICATION#" + feedId;
 
     //이미 신청했는지 확인 코드 추가
@@ -48,7 +48,9 @@ public class ApplicationService {
         application.setEntityType("APPLICATION");  
         application.setPart(part); 
         application.setStatus("PENDING");  //기본상태
-        application.setTimestamp(LocalDateTime.now());  
+        application.setTimestamp(LocalDateTime.now());
+        application.setCreatorId("USER#" + userId);     // 🔥 추가
+        application.setUserStatus("ACTIVE");
 
        
         applicationRepository.save(application);
@@ -177,7 +179,7 @@ public class ApplicationService {
                 .collect(Collectors.toList());
     }
 
-    // 거절된 신청목록 조회회
+    // 거절된 신청목록 조회
     public List<ApplicationDto> getRejectedApplications(String userId) {
         String userPk = "USER#" + userId;
         List<Application> applications = applicationRepository.findByUserPk(userPk);
@@ -199,6 +201,26 @@ public class ApplicationService {
                 .collect(Collectors.toList());
     }
 
-
+    //이 메소드는 나중에 유저서비스에서 탈퇴서비스를 만들때 수행할 예정정
+    public void cleanUpApplicationsByDeletedUser(String userId) {
+        String userPk = "USER#" + userId;
+    
+        // 신청 내역 모두 조회
+        List<Application> applications = applicationRepository.findByUserPk(userPk);
+    
+        for (Application application : applications) {
+            // userStatus가 DELETED인 경우만 처리
+            if ("DELETED".equals(application.getUserStatus())) {
+                String feedId = application.getSk().replace("APPLICATION#", "");
+    
+                
+                feedService.cancelApplicationInFeed(feedId, application.getPart()); //줄어드는 함수수
+    
+             
+                applicationRepository.delete(application);
+            }
+        }
+    }
+    
 }
 

@@ -4,6 +4,7 @@ import com.example.demo.entity.Comment;
 import com.example.demo.entity.FeedEntity;
 import com.example.demo.service.FeedService;
 
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +21,7 @@ public class FeedController {
 
     public FeedController(FeedService feedService) {
         this.feedService = feedService;
+
     }
 
     @GetMapping("/test")
@@ -132,16 +134,6 @@ public ResponseEntity<String> deleteComment(
     }
 }
 
-
-    //좋아요 엔드포인트 업데이트로 바꿨습니다
-    @PutMapping("/{feedId}/like")
-    public ResponseEntity<String> likeFeed(
-    @PathVariable("feedId") String feedId,
-    @RequestParam("userId") String userId,
-    @RequestParam("feedType") String feedType) {
-    feedService.likeFeed(userId, feedId, feedType);
-    return ResponseEntity.ok("Like added successfully");
-}
        
     
 

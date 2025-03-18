@@ -24,6 +24,35 @@ public class Like {
     private String entityType = "LIKE";  // 
     private String feedID;
     private LocalDateTime timestamp;
+    private String userStatus;
+    private String creatorId;
+    private String feedType; //탈퇴한 사용자의 좋아요를  처리하기 위해서는 있어야됨
+
+    
+    @DynamoDbAttribute("feedType")
+    public String getFeedType() {
+        return feedType;
+    }
+
+    public void setFeedType(String feedType) {
+        this.feedType = feedType;
+    }
+
+    @DynamoDbAttribute("userStatus")
+    public String getUserStatus() {
+        return userStatus;
+    }
+    public void setUserStatus(String userStatus) {
+        this.userStatus = userStatus;
+    }
+
+    @DynamoDbAttribute("creatorId")
+    public String getCreatorId() {
+        return creatorId;
+    }
+    public void setCreatorId(String creatorId) {
+        this.creatorId = creatorId;
+    }
 
     @DynamoDbPartitionKey
     @DynamoDbAttribute("Pk")

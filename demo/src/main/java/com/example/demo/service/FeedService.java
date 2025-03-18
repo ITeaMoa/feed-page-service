@@ -2,10 +2,9 @@ package com.example.demo.service;
 
 import com.example.demo.entity.Comment;
 import com.example.demo.entity.FeedEntity;
-import com.example.demo.entity.Like;
+
 import com.example.demo.entity.UserProfile;
 import com.example.demo.repository.FeedRepository;
-import com.example.demo.repository.LikeRepository;
 import com.example.demo.repository.UserProfileRepository;
 
 
@@ -22,12 +21,10 @@ import java.util.stream.Collectors;
 @Service
 public class FeedService {
     private final FeedRepository feedRepository;
-    private final LikeRepository likeRepository;
     private final UserProfileRepository userProfileRepository;
 
-    public FeedService(FeedRepository feedRepository, LikeRepository likeRepository, UserProfileRepository userProfileRepository) {
+    public FeedService(FeedRepository feedRepository, UserProfileRepository userProfileRepository) {
         this.feedRepository = feedRepository;
-        this.likeRepository = likeRepository;
         this.userProfileRepository = userProfileRepository;
     }
 
@@ -54,10 +51,18 @@ public class FeedService {
         // creatorId 기반으로 nickname 가져오기
         String userPk = "USER#" + userId;
         UserProfile userProfile = userProfileRepository.findById(userPk, "PROFILE#");
+
         if (userProfile != null && userProfile.getNickname() != null) {
             feedEntity.setNickname(userProfile.getNickname()); // 닉네임 저장
         } else {
             feedEntity.setNickname("Unknown"); // 닉네임이 없을 경우 기본값
+        }
+
+        // creatorId 기반으로 userStatus 가져오기
+        if (userProfile != null) {
+            feedEntity.setUserStatus(userProfile.getUserStatus() != null ? userProfile.getUserStatus() : "ACTIVE");
+        } else {
+            feedEntity.setUserStatus("UNKNOWN"); // 혹시 profile 못 불러올 때
         }
     
         // Roles r기반으로  RecruitmentRoles 초기화
@@ -247,43 +252,7 @@ public class FeedService {
         feedRepository.save(feedEntity);
     }
     
-    
-
-
-
-    public void likeFeed(String userId, String feedId, String feedType) {
-        // 좋아요 엔티티 생성
-        Like existingLike = likeRepository.findLikeByUserAndFeed(userId, feedId);
-        
-        if (existingLike != null) {
-            // 이미 좋아요가 존재하는 경우
-            throw new RuntimeException("User already liked this feed");
-        }
-    
-        Like like = new Like(
-            "USER#" + userId,
-            "LIKE#" + feedId,
-            "LIKE",
-            feedId,
-            LocalDateTime.now()
-        );
-    
-        likeRepository.save(like);
-    
-        // 피드 조회 및 좋아요 수 증가
-        FeedEntity feed = feedRepository.findById(feedId, feedType); 
-        if (feed == null) {
-            throw new RuntimeException("Feed not found");
-        }
-        
-        feed.setLikesCount(feed.getLikesCount() + 1);
-        feedRepository.save(feed);
-    }
-    
-
-    
-
-
+    //신청청결과를 피드에 반영하는 로직임임
     public void applyToFeed(String feedId, String part, String feedType) {
         FeedEntity feedEntity = feedRepository.findById(feedId, feedType);
         
@@ -319,6 +288,7 @@ public class FeedService {
         return null;
     }
     
+    //신청취소결과를 피드에 반영하는 로직임임
     public void cancelApplicationInFeed(String feedId, String part) {
         
         FeedEntity feedEntity = findFeedByPk("FEED#" + feedId);
