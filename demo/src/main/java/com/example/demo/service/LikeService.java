@@ -37,7 +37,7 @@ public class LikeService {
         like.setFeedID(feedId);
         like.setFeedType(feedType); // 
         like.setTimestamp(LocalDateTime.now());
-        like.setUserStatus("ACTIVE");  // 추가된 필드
+        like.setUserStatus(true); // 추가된 필드
         like.setCreatorId("USER#" + userId);  // 추가된 필드
 
         likeRepository.save(like);
@@ -78,20 +78,11 @@ public class LikeService {
     public void cleanUpLikesByDeletedUser(String userId) {
         String userPk = "USER#" + userId;
         List<Like> likesByUser = likeRepository.findAllByUserPk(userPk);
-
+    
         for (Like like : likesByUser) {
-            if ("DELETED".equals(like.getUserStatus())) {
-                String feedId = like.getFeedID();
-                String feedType = like.getFeedType(); // feedType 활용
-
-                FeedEntity feed = feedRepository.findById(feedId, feedType);
-                if (feed != null) {
-                    int currentLikes = feed.getLikesCount() != null ? feed.getLikesCount() : 0;
-                    feed.setLikesCount(Math.max(currentLikes - 1, 0));
-                    feedRepository.save(feed);
-                }
-
-                likeRepository.delete(like);
+            if (Boolean.FALSE.equals(like.getUserStatus())) {
+                // ✅ 좋아요 수는 줄이지 않음
+                likeRepository.delete(like); // 단순히 기록만 삭제
             }
         }
     }

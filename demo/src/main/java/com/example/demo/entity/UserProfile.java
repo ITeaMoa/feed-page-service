@@ -17,20 +17,20 @@ public class UserProfile {
     private String pk;  
     private String sk;
     private String nickname;
-    private String avatarUrl;
+    private String avatarUrl; //프로필사진진
     private String headLine;
     private List<String> tags;
     private List<String> educations;
     private List<String> personalUrl;
     private List<String> experiences;
-    private String userStatus;
+    private Boolean userStatus;
 
     @DynamoDbAttribute("userStatus")
-    public String getUserStatus() {
+    public Boolean getUserStatus() {
         return userStatus;
     }
 
-    public void setUserStatus(String userStatus) {
+    public void setUserStatus(Boolean userStatus) {
         this.userStatus = userStatus;
     }
 

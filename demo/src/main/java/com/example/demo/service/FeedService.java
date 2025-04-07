@@ -60,9 +60,9 @@ public class FeedService {
 
         // creatorId 기반으로 userStatus 가져오기
         if (userProfile != null) {
-            feedEntity.setUserStatus(userProfile.getUserStatus() != null ? userProfile.getUserStatus() : "ACTIVE");
+            feedEntity.setUserStatus(userProfile.getUserStatus() != null ? userProfile.getUserStatus() : true);
         } else {
-            feedEntity.setUserStatus("UNKNOWN"); // 혹시 profile 못 불러올 때
+            feedEntity.setUserStatus(true); // 기본값은 true
         }
     
         // Roles r기반으로  RecruitmentRoles 초기화
@@ -99,7 +99,10 @@ public class FeedService {
         existingFeed.setTags(updatedFeed.getTags() != null ? updatedFeed.getTags() : existingFeed.getTags());
         existingFeed.setPeriod(updatedFeed.getPeriod() != null ? updatedFeed.getPeriod() : existingFeed.getPeriod());
         existingFeed.setDeadline(updatedFeed.getDeadline() != null ? updatedFeed.getDeadline() : existingFeed.getDeadline());
-    
+        existingFeed.setImageUrl(
+            updatedFeed.getImageUrl() != null ? updatedFeed.getImageUrl() : existingFeed.getImageUrl()
+        );
+
         feedRepository.save(existingFeed);
     }
     
@@ -163,7 +166,7 @@ public class FeedService {
     
         comment.setCommentId(UUID.randomUUID().toString()); //커멘트아이디 추가
         comment.setTimestamp(LocalDateTime.now());
-    
+           
         
         String userPk = "USER#" + comment.getUserId();
         UserProfile userProfile = userProfileRepository.findById(userPk, "PROFILE#");
@@ -171,6 +174,15 @@ public class FeedService {
             comment.setNickname(userProfile.getNickname());
         } else {
             comment.setNickname("Unknown");
+        }
+
+        //userstatus 설정정
+        if (userProfile != null) {
+            comment.setNickname(userProfile.getNickname());
+            comment.setUserStatus(userProfile.getUserStatus());
+        } else {
+            comment.setNickname("Unknown");
+            comment.setUserStatus(true);
         }
     
   

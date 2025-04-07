@@ -24,7 +24,7 @@ public class Application {
     private String status;  // 지원서 상태 (Pending, Accepted, Rejected)
     private LocalDateTime timestamp;  // 신청 시간
     private String creatorId;      // 신청자 ID
-    private String userStatus;     // 신청자의 상태 (ACTIVE or DELETED)
+    private Boolean userStatus;
 
     @DynamoDbAttribute("creatorId")
     public String getCreatorId() {
@@ -35,10 +35,11 @@ public class Application {
     }
 
     @DynamoDbAttribute("userStatus")
-    public String getUserStatus() {
+    public Boolean getUserStatus() {
         return userStatus;
     }
-    public void setUserStatus(String userStatus) {
+
+    public void setUserStatus(Boolean userStatus) {
         this.userStatus = userStatus;
     }
 

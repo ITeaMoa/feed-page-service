@@ -50,7 +50,7 @@ public class ApplicationService {
         application.setStatus("PENDING");  //기본상태
         application.setTimestamp(LocalDateTime.now());
         application.setCreatorId("USER#" + userId);     // 🔥 추가
-        application.setUserStatus("ACTIVE");
+        application.setUserStatus(true);
 
        
         applicationRepository.save(application);
@@ -204,19 +204,19 @@ public class ApplicationService {
     //이 메소드는 나중에 유저서비스에서 탈퇴서비스를 만들때 수행할 예정정
     public void cleanUpApplicationsByDeletedUser(String userId) {
         String userPk = "USER#" + userId;
-    
-        // 신청 내역 모두 조회
         List<Application> applications = applicationRepository.findByUserPk(userPk);
     
         for (Application application : applications) {
-            // userStatus가 DELETED인 경우만 처리
-            if ("DELETED".equals(application.getUserStatus())) {
+            // 탈퇴한 사용자만 처리
+            if (Boolean.FALSE.equals(application.getUserStatus())) {
                 String feedId = application.getSk().replace("APPLICATION#", "");
     
-                
-                feedService.cancelApplicationInFeed(feedId, application.getPart()); //줄어드는 함수수
+                // 수락된 경우만 신청자 수 감소하고 삭제제
+                if ("ACCEPTED".equals(application.getStatus())) {
+                    feedService.cancelApplicationInFeed(feedId, application.getPart());
+                }
     
-             
+                //그외 나머지는 전부 삭제임 
                 applicationRepository.delete(application);
             }
         }

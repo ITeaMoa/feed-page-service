@@ -38,22 +38,31 @@ public class FeedEntity {
     private Boolean savedFeed;
     private List<String> tags;
     private List<Comment> comments; 
-    private Integer recruitmentNum;
+    private Integer recruitmentNum; //모집인원원
     private LocalDateTime deadline;
     private String place;
     private Integer period;
     private Integer likesCount;
-    private Map<String, Integer> recruitmentRoles;  
+    private Map<String, Integer> recruitmentRoles;  //모집받는 역할의 수 신청하면 줄어듬
     private Map<String, Integer> roles; 
     private String nickname;
-    private String userStatus;
+    private Boolean userStatus;
+    private String imageUrl;
+
+    @DynamoDbAttribute("imageUrl")
+    public String getImageUrl() {
+        return imageUrl;
+    }
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 
     @DynamoDbAttribute("userStatus")
-    public String getUserStatus() {
+    public Boolean getUserStatus() {
         return userStatus;
     }
 
-    public void setUserStatus(String userStatus) {
+    public void setUserStatus(Boolean userStatus) {
         this.userStatus = userStatus;
     }
 
