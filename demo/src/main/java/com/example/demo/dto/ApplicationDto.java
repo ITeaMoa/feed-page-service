@@ -4,13 +4,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import com.example.demo.constant.StatusType;
+
 
 //dto만듬 보기쉽다
 public class ApplicationDto {
     private String userId;   
     private String feedId;   
     private String part;
-    private String status;
+    private StatusType status;
     private LocalDateTime applicationTimestamp;
 
     private String creatorId;
@@ -135,12 +137,12 @@ public class ApplicationDto {
         this.nickname = nickname;
     }
 
-    public String getStatus(){
+    public StatusType getStatus() {
         return status;
     }
-
-    public void setStatus(String status) {
-        this.status=status;
+    
+    public void setStatus(StatusType status) {
+        this.status = status;
     }
 
     public LocalDateTime getApplicationTimestamp() {

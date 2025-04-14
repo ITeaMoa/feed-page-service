@@ -1,78 +1,26 @@
 package com.example.demo.entity;
 
+import com.example.demo.constant.DynamoDbEntityType;
+import com.example.demo.converter.LocalDateTimeConverter;
+import lombok.*;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.*;
+
 import java.time.LocalDateTime;
 
-import com.example.demo.entity.FeedEntity.LocalDateTimeConverter;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbConvertedBy;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
-
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @DynamoDbBean
-public class Like {
+public class Like extends BaseEntity {
 
-    private String pk;  // 사용자별로 구분
-    private String sk;  // 피드별 구분
-    private String entityType = "LIKE";  // 
     private String feedID;
-    private LocalDateTime timestamp;
-    private Boolean userStatus;
-    private String creatorId;
-    private String feedType; //탈퇴한 사용자의 좋아요를  처리하기 위해서는 있어야됨
+    private String feedType; 
 
-    
-    @DynamoDbAttribute("feedType")
-    public String getFeedType() {
-        return feedType;
-    }
-
-    public void setFeedType(String feedType) {
-        this.feedType = feedType;
-    }
-
-    @DynamoDbAttribute("userStatus")
-    public Boolean getUserStatus() {
-        return userStatus;
-    }
-
-    public void setUserStatus(Boolean userStatus) {
-        this.userStatus = userStatus;
-    }
-
-    @DynamoDbAttribute("creatorId")
-    public String getCreatorId() {
-        return creatorId;
-    }
-    public void setCreatorId(String creatorId) {
-        this.creatorId = creatorId;
-    }
-
-    @DynamoDbPartitionKey
-    @DynamoDbAttribute("Pk")
-    public String getPk() {
-        return pk;
-    }
-
-    public void setPk(String pk) {
-        this.pk = pk;
-    }
-
-    @DynamoDbSortKey
-    @DynamoDbAttribute("Sk")
-    public String getSk() {
-        return sk;
-    }
-
-    public void setSk(String sk) {
-        this.sk = sk;
+    @DynamoDbAttribute("entityType")
+    public DynamoDbEntityType getEntityType() {
+        return DynamoDbEntityType.LIKE;
     }
 
     @DynamoDbAttribute("feedID")
@@ -84,14 +32,32 @@ public class Like {
         this.feedID = feedID;
     }
 
+    @DynamoDbAttribute("feedType")
+    public String getFeedType() {
+        return feedType;
+    }
+
+    public void setFeedType(String feedType) {
+        this.feedType = feedType;
+    }
+
+    @Override
     @DynamoDbConvertedBy(LocalDateTimeConverter.class)
     @DynamoDbAttribute("timestamp")
     public LocalDateTime getTimestamp() {
-        return timestamp;
+        return super.getTimestamp();
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
+    @Override
+    @DynamoDbAttribute("creatorId")
+    @DynamoDbSecondaryPartitionKey(indexNames = {"CreatorId-index"})
+    public String getCreatorId() {
+        return super.getCreatorId();
+    }
+
+    @Override
+    @DynamoDbAttribute("userStatus")
+    public Boolean getUserStatus() {
+        return super.getUserStatus();
     }
 }
-

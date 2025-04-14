@@ -1,108 +1,45 @@
 package com.example.demo.entity;
 
-import lombok.*;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbConvertedBy;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondaryPartitionKey;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondarySortKey;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
-import software.amazon.awssdk.enhanced.dynamodb.AttributeConverter;
-import software.amazon.awssdk.enhanced.dynamodb.AttributeValueType;
-import software.amazon.awssdk.enhanced.dynamodb.EnhancedType;
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import com.example.demo.constant.DynamoDbEntityType;
+import com.example.demo.converter.LocalDateTimeConverter;
+
+import lombok.*;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.*;
+
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @DynamoDbBean
-public class FeedEntity {
+public class FeedEntity extends BaseEntity {
 
-    private String pk;
-    private String sk;
-    @Builder.Default
-    private String entityType = "FEED"; 
-    private String creatorId;
     private String title;
     private String content;
-    private LocalDateTime timestamp;
     private Boolean postStatus;
     private Boolean savedFeed;
     private List<String> tags;
-    private List<Comment> comments; 
-    private Integer recruitmentNum; //모집인원원
+    private List<Comment> comments;
+    private Integer recruitmentNum;
     private LocalDateTime deadline;
     private String place;
     private Integer period;
     private Integer likesCount;
-    private Map<String, Integer> recruitmentRoles;  //모집받는 역할의 수 신청하면 줄어듬
-    private Map<String, Integer> roles; 
+    private Map<String, Integer> recruitmentRoles;
+    private Map<String, Integer> roles;
     private String nickname;
-    private Boolean userStatus;
     private String imageUrl;
 
-    @DynamoDbAttribute("imageUrl")
-    public String getImageUrl() {
-        return imageUrl;
-    }
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    @DynamoDbAttribute("userStatus")
-    public Boolean getUserStatus() {
-        return userStatus;
-    }
-
-    public void setUserStatus(Boolean userStatus) {
-        this.userStatus = userStatus;
-    }
-
-    @DynamoDbAttribute("nickname") // nickname 필드 매핑
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    
-    @DynamoDbPartitionKey
-    @DynamoDbAttribute("Pk")
-    public String getPk() {
-        return pk;
-    }
-
-    @DynamoDbSortKey
-    @DynamoDbAttribute("Sk")
-    public String getSk() {
-        return sk;
-    }
-
     @DynamoDbAttribute("entityType")
-    public String getEntityType() {
-        return entityType;
+    public DynamoDbEntityType getEntityType() {
+        return DynamoDbEntityType.FEED;
     }
 
-    @DynamoDbSecondaryPartitionKey(indexNames = "PostedFeed-index")
-    @DynamoDbAttribute("creatorId")
-    public String getCreatorId() {
-        return creatorId;
-    }
-
-    public void setCreatorId(String creatorId) {
-        this.creatorId = creatorId;
-    }
-
+    // 이하 기타 필드 매핑
     @DynamoDbAttribute("title")
     public String getTitle() {
         return title;
@@ -113,19 +50,12 @@ public class FeedEntity {
         return content;
     }
 
-    @DynamoDbSecondarySortKey(indexNames = "PostedFeed-index")
-    @DynamoDbConvertedBy(LocalDateTimeConverter.class)
-    @DynamoDbAttribute("timestamp")
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-
     @DynamoDbAttribute("postStatus")
     public Boolean getPostStatus() {
         return postStatus;
     }
 
-    @DynamoDbAttribute("savedFeed") 
+    @DynamoDbAttribute("savedFeed")
     public Boolean getSavedFeed() {
         return savedFeed;
     }
@@ -139,7 +69,7 @@ public class FeedEntity {
     public List<Comment> getComments() {
         return comments;
     }
-    
+
     public void setComments(List<Comment> comments) {
         this.comments = comments;
     }
@@ -170,6 +100,7 @@ public class FeedEntity {
     public Integer getLikesCount() {
         return likesCount;
     }
+
     @DynamoDbAttribute("roles")
     public Map<String, Integer> getRoles() {
         return roles;
@@ -178,7 +109,7 @@ public class FeedEntity {
     public void setRoles(Map<String, Integer> roles) {
         this.roles = roles;
     }
-    
+
     @DynamoDbAttribute("recruitmentRoles")
     public Map<String, Integer> getRecruitmentRoles() {
         return recruitmentRoles;
@@ -188,34 +119,21 @@ public class FeedEntity {
         this.recruitmentRoles = recruitmentRoles;
     }
 
-    public static class LocalDateTimeConverter implements AttributeConverter<LocalDateTime> {
-        @Override
-        public AttributeValue transformFrom(LocalDateTime input) {
-            if (input == null) {
-                return null;
-            }
-            return AttributeValue.builder().s(input.toString()).build();
-        }
+    @DynamoDbAttribute("nickname")
+    public String getNickname() {
+        return nickname;
+    }
 
-        @Override
-        public LocalDateTime transformTo(AttributeValue attributeValue) {
-            if (attributeValue == null || attributeValue.nul() != null && attributeValue.nul()) {
-                return null;
-            }
-            return LocalDateTime.parse(attributeValue.s());
-        }
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
 
-        @Override
-        public EnhancedType<LocalDateTime> type() {
-            return EnhancedType.of(LocalDateTime.class);
-        }
+    @DynamoDbAttribute("imageUrl")
+    public String getImageUrl() {
+        return imageUrl;
+    }
 
-        @Override
-        public AttributeValueType attributeValueType() {
-            return AttributeValueType.S;
-        }
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
-
-
-

@@ -1,98 +1,75 @@
 package com.example.demo.entity;
 
+import com.example.demo.constant.DynamoDbEntityType;
+import com.example.demo.constant.StatusType;
+import com.example.demo.converter.LocalDateTimeConverter;
+import lombok.*;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.*;
+
 import java.time.LocalDateTime;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
-
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @DynamoDbBean
-public class Application {
+public class Application extends BaseEntity {
 
-    private String pk;   // USER#<UserID>
-    private String sk;   // APPLICATION#<FeedID>
-    private String entityType = "APPLICATION";  // "Application" 설정
-
-    private String part;  // 지원 분야
-    private String status;  // 지원서 상태 (Pending, Accepted, Rejected)
-    private LocalDateTime timestamp;  // 신청 시간
-    private String creatorId;      // 신청자 ID
-    private Boolean userStatus;
-
-    @DynamoDbAttribute("creatorId")
-    public String getCreatorId() {
-        return creatorId;
+    
+    private String part; // 지원 분야
+    private StatusType status; // 상태 Enum 사용
+     
+    @DynamoDbAttribute("entityType")
+    public DynamoDbEntityType getEntityType() {
+        return DynamoDbEntityType.APPLICATION;
     }
-    public void setCreatorId(String creatorId) {
-        this.creatorId = creatorId;
-    }
-
-    @DynamoDbAttribute("userStatus")
-    public Boolean getUserStatus() {
-        return userStatus;
-    }
-
-    public void setUserStatus(Boolean userStatus) {
-        this.userStatus = userStatus;
-    }
-
-   
-
-    @DynamoDbPartitionKey
-    @DynamoDbAttribute("Pk")
-    public String getPk() {
-        return pk;
-    }
-
-    public void setPk(String pk) {
-        this.pk = pk;
-    }
-
-    @DynamoDbSortKey
-    @DynamoDbAttribute("Sk")
-    public String getSk() {
-        return sk;
-    }
-
-    public void setSk(String sk) {
-        this.sk = sk;
-    }
-
-
+    
     @DynamoDbAttribute("part")
     public String getPart() {
         return part;
     }
 
-    public void setPart(String part) {
-        this.part = part;
-    }
-
     @DynamoDbAttribute("status")
-    public String getStatus() {
+    public StatusType getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(StatusType status) {
         this.status = status;
     }
 
+    //  BaseEntity에서 상속
+    @DynamoDbConvertedBy(LocalDateTimeConverter.class)
+    @Override
     @DynamoDbAttribute("timestamp")
     public LocalDateTime getTimestamp() {
-        return timestamp;
+        return super.getTimestamp();
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
+    @Override
+    @DynamoDbPartitionKey  //-
+    @DynamoDbAttribute("Pk")
+    public String getPk() {
+        return super.getPk();
+    }
+
+    @Override
+    @DynamoDbSortKey  // -
+    @DynamoDbAttribute("Sk")
+    public String getSk() {
+        return super.getSk();
+    }
+
+    @Override
+    @DynamoDbAttribute("creatorId")
+    public String getCreatorId() {
+        return super.getCreatorId();
+    }
+
+    @Override
+    @DynamoDbAttribute("userStatus")
+    public Boolean getUserStatus() {
+        return super.getUserStatus();
     }
 }
-
-
-

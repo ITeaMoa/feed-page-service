@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.constant.DynamoDbEntityType;
 import com.example.demo.entity.Comment;
 import com.example.demo.entity.FeedEntity;
 
@@ -37,7 +38,7 @@ public class FeedService {
 
         feedEntity.setPk("FEED#" + feedId); 
         feedEntity.setSk("FEEDTYPE#" + formattedFeedType);
-        feedEntity.setEntityType("FEED");
+        feedEntity.setEntityType(DynamoDbEntityType.FEED); 
         feedEntity.setTimestamp(LocalDateTime.now()); 
         feedEntity.setLikesCount(0);  
 
@@ -158,25 +159,28 @@ public class FeedService {
 
     // 피드에 댓글 추가 메서드
     public void addComment(String feedId, String feedType, Comment comment) {
-       
         FeedEntity feedEntity = feedRepository.findById(feedId, feedType);
         if (feedEntity == null) {
             throw new RuntimeException("해당 피드를 찾을 수 없습니다.");
         }
     
-        comment.setCommentId(UUID.randomUUID().toString()); //커멘트아이디 추가
-        comment.setTimestamp(LocalDateTime.now());
-           
-        
+        String commentId = UUID.randomUUID().toString();
+        LocalDateTime now = LocalDateTime.now();
+    
+        String pk = "FEED#" + feedId;
+        String sk = "COMMENT#" + commentId + "#" + now;
+    
+        // 유저 정보 조회
         String userPk = "USER#" + comment.getUserId();
         UserProfile userProfile = userProfileRepository.findById(userPk, "PROFILE#");
-        if (userProfile != null && userProfile.getNickname() != null) {
-            comment.setNickname(userProfile.getNickname());
-        } else {
-            comment.setNickname("Unknown");
-        }
-
-        //userstatus 설정정
+    
+        // BaseEntity 상속 구조에 맞게 댓글 구성
+        comment.setPk(pk);
+        comment.setSk(sk);
+        comment.setTimestamp(now);
+        comment.setCreatorId(userPk);
+        comment.setCommentId(commentId);
+    
         if (userProfile != null) {
             comment.setNickname(userProfile.getNickname());
             comment.setUserStatus(userProfile.getUserStatus());
@@ -185,84 +189,76 @@ public class FeedService {
             comment.setUserStatus(true);
         }
     
-  
+        // 리스트가 null인 경우 초기화
         if (feedEntity.getComments() == null) {
             feedEntity.setComments(new ArrayList<>());
         }
     
-      
-        if (comment.getUserId() == null) {
-            throw new RuntimeException("userId가 null입니다. 확인이 필요합니다.");
-        }
-    
         feedEntity.getComments().add(comment);
-    
-     
         feedRepository.save(feedEntity);
     }
+
+    //  댓글 수정 메서드
     public void updateComment(String feedId, String feedType, String commentId, String userId, String newContent) {
-        if (newContent == null || newContent.trim().isEmpty()) {
-            throw new RuntimeException("수정할 댓글 내용을 입력해주세요.");
-        }
-    
-        FeedEntity feedEntity = feedRepository.findById(feedId, feedType);
-        if (feedEntity == null) {
-            throw new RuntimeException("해당 피드를 찾을 수 없습니다.");
-        }
-    
-        List<Comment> comments = feedEntity.getComments();
-        if (comments != null) {
-            for (Comment comment : comments) {
-                if (comment.getCommentId().equals(commentId)) {
-                    // 작성자 확인
-                    if (!comment.getUserId().equals(userId)) {
-                        throw new RuntimeException("댓글 수정 권한이 없습니다.");
-                    }
-    
-                    comment.setComment(newContent);
-                    comment.setTimestamp(LocalDateTime.now());
-    
-                    // 수정된 댓글 리스트를 다시 feedEntity에 설정
-                    feedEntity.setComments(comments);
-                    
-                    feedRepository.save(feedEntity);
-                    return;
+    if (newContent == null || newContent.trim().isEmpty()) {
+        throw new RuntimeException("수정할 댓글 내용을 입력해주세요.");
+    }
+
+    FeedEntity feedEntity = feedRepository.findById(feedId, feedType);
+    if (feedEntity == null) {
+        throw new RuntimeException("해당 피드를 찾을 수 없습니다.");
+    }
+
+    List<Comment> comments = feedEntity.getComments();
+    if (comments != null) {
+        for (Comment comment : comments) {
+            if (comment.getCommentId().equals(commentId)) {
+                if (!comment.getUserId().equals(userId)) {
+                    throw new RuntimeException("댓글 수정 권한이 없습니다.");
                 }
+
+                comment.setComment(newContent);
+                comment.setTimestamp(LocalDateTime.now()); // 수정된 시간 반영
+
+                feedEntity.setComments(comments);
+                feedRepository.save(feedEntity);
+                return;
             }
         }
-    
-        throw new RuntimeException("해당 댓글을 찾을 수 없습니다.");
     }
+
+    throw new RuntimeException("해당 댓글을 찾을 수 없습니다.");
+}
+
     
     
     
 
+    // 댓글 삭제 메서드
     public void deleteComment(String feedId, String feedType, String commentId, String userId) {
-        // 피드 조회
-        FeedEntity feedEntity = feedRepository.findById(feedId, feedType);
-        if (feedEntity == null) {
-            throw new RuntimeException("해당 피드를 찾을 수 없습니다.");
-        }
-    
-        // 댓글 찾기
-        List<Comment> comments = feedEntity.getComments();
-        if (comments == null || comments.isEmpty()) {
-            throw new RuntimeException("해당 게시물에 댓글이 없습니다.");
-        }
-    
-        // 댓글 작성자 확인 후 삭제
-        boolean removed = comments.removeIf(comment -> 
-            comment.getCommentId().equals(commentId) && comment.getUserId().equals(userId)
-        );
-    
-        if (!removed) {
-            throw new RuntimeException("댓글 삭제 권한이 없거나 댓글을 찾을 수 없습니다.");
-        }
-    
-        // 삭제 후 저장
-        feedEntity.setComments(comments);
-        feedRepository.save(feedEntity);
+    FeedEntity feedEntity = feedRepository.findById(feedId, feedType);
+    if (feedEntity == null) {
+        throw new RuntimeException("해당 피드를 찾을 수 없습니다.");
     }
+
+    List<Comment> comments = feedEntity.getComments();
+    if (comments == null || comments.isEmpty()) {
+        throw new RuntimeException("댓글이 존재하지 않습니다.");
+    }
+
+    boolean removed = comments.removeIf(comment ->
+        comment.getCommentId().equals(commentId) &&
+        comment.getUserId().equals(userId)
+    );
+
+    if (!removed) {
+        throw new RuntimeException("댓글 삭제 권한이 없거나 댓글을 찾을 수 없습니다.");
+    }
+
+    feedEntity.setComments(comments);
+    feedRepository.save(feedEntity);
+}
+
     
     //신청청결과를 피드에 반영하는 로직임임
     public void applyToFeed(String feedId, String part, String feedType) {

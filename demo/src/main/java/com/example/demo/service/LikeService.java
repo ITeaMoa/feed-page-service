@@ -10,7 +10,6 @@ import com.example.demo.entity.Like;
 import com.example.demo.repository.FeedRepository;
 import com.example.demo.repository.LikeRepository;
 
-
 @Service
 public class LikeService {
 
@@ -22,69 +21,61 @@ public class LikeService {
         this.likeRepository = likeRepository;
     }
 
+    // ✅ 좋아요 추가
     public void likeFeed(String userId, String feedId, String feedType) {
-        // 이미 좋아요 했는지 확인
         Like existingLike = likeRepository.findLikeByUserAndFeed(userId, feedId);
         if (existingLike != null) {
-            throw new RuntimeException("User already liked this feed");
+            throw new RuntimeException("이미 좋아요한 피드입니다.");
         }
 
-        // 좋아요 객체 생성
         Like like = new Like();
-        like.setPk("USER#" + userId);  // 유저 기준 PK
-        like.setSk("LIKE#" + feedId);  // 피드 기준 SK
-        like.setEntityType("LIKE");
+        like.setPk("USER#" + userId);
+        like.setSk("LIKE#" + feedId);
         like.setFeedID(feedId);
-        like.setFeedType(feedType); // 
+        like.setFeedType(feedType);
+        like.setCreatorId("USER#" + userId);
+        like.setUserStatus(true);
         like.setTimestamp(LocalDateTime.now());
-        like.setUserStatus(true); // 추가된 필드
-        like.setCreatorId("USER#" + userId);  // 추가된 필드
 
         likeRepository.save(like);
 
-        // 피드에 좋아요 수 증가
         FeedEntity feed = feedRepository.findById(feedId, feedType);
         if (feed == null) {
-            throw new RuntimeException("Feed not found");
+            throw new RuntimeException("피드를 찾을 수 없습니다.");
         }
 
         feed.setLikesCount(feed.getLikesCount() + 1);
         feedRepository.save(feed);
     }
 
-    // 좋아요 취소 기능 
+    // ✅ 좋아요 취소
     public void unlikeFeed(String userId, String feedId, String feedType) {
         Like existingLike = likeRepository.findLikeByUserAndFeed(userId, feedId);
         if (existingLike == null) {
-            throw new RuntimeException("좋아요 기록이 없습니다.");
+            throw new RuntimeException("좋아요 내역이 없습니다.");
         }
-
 
         likeRepository.delete(existingLike);
 
-        // 좋아요 수 감소
         FeedEntity feed = feedRepository.findById(feedId, feedType);
         if (feed == null) {
-            throw new RuntimeException("Feed not found");
+            throw new RuntimeException("피드를 찾을 수 없습니다.");
         }
 
         int currentLikes = feed.getLikesCount() != null ? feed.getLikesCount() : 0;
-        feed.setLikesCount(Math.max(currentLikes - 1, 0)); // 0 밑으로 내려가지 않게
+        feed.setLikesCount(Math.max(currentLikes - 1, 0));
         feedRepository.save(feed);
     }
 
-
-    //탈퇴유저의 좋아요 수 취소 이 메소드는 나중에 유저서비스에서 탈퇴서비스를 만들때 수행할 예정정
+    // ✅ 탈퇴 유저의 좋아요 정리 (userStatus=false인 경우 삭제)
     public void cleanUpLikesByDeletedUser(String userId) {
         String userPk = "USER#" + userId;
         List<Like> likesByUser = likeRepository.findAllByUserPk(userPk);
-    
+
         for (Like like : likesByUser) {
             if (Boolean.FALSE.equals(like.getUserStatus())) {
-                // ✅ 좋아요 수는 줄이지 않음
-                likeRepository.delete(like); // 단순히 기록만 삭제
+                likeRepository.delete(like);
             }
         }
     }
-    
 }

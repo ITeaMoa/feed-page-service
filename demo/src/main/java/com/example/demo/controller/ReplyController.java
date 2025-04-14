@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,4 +45,14 @@ public class ReplyController {
         return ResponseEntity.ok(replyService.getRepliesForComment(feedId, commentId));
     }
 
+    @DeleteMapping("/{feedId}/comments/{commentId}/replies/{replyId}")
+    public ResponseEntity<String> deleteReply(
+        @PathVariable("feedId") String feedId,
+        @PathVariable("commentId") String commentId,
+        @PathVariable("replyId") String replyId,
+        @RequestParam("userId") String userId 
+    ) {
+        replyService.deleteReply(feedId, commentId, replyId, userId);
+        return ResponseEntity.ok("삭제되었습니다.");
+    }
 }

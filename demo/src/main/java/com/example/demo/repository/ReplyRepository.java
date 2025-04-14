@@ -30,11 +30,11 @@ public class ReplyRepository {
         replyTable.putItem(replyEntity);
     }
 
-    public void delete(ReplyEntity replyEntity) { //보류류일단보류이히히히
+    public void delete(ReplyEntity reply) {
         Key key = Key.builder()
-                .partitionValue(replyEntity.getPk())
-                .sortValue(replyEntity.getSk())
-                .build();
+            .partitionValue(reply.getPk())
+            .sortValue(reply.getSk())
+            .build();
         replyTable.deleteItem(key);
     }
 
@@ -50,4 +50,6 @@ public class ReplyRepository {
                 .filter(reply -> reply.getSk().startsWith(skPrefix))
                 .collect(Collectors.toList());
     }
+
+    
 }
