@@ -1,5 +1,8 @@
 package com.example.demo.repository;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Repository;
 
 import com.example.demo.entity.Like;
@@ -25,28 +28,36 @@ public class LikeRepository {
         this.likeTable = enhancedClient.table("IM_MAIN_TB", TableSchema.fromBean(Like.class));
     }
 
+    // 좋아요 저장
     public void save(Like like) {
         likeTable.putItem(like);
     }
 
-    public boolean existsByUserIdAndFeedId(String userId, String feedId) { //사용자가 피드에 좋아요 눌렀는지 확인
+    // 좋아요 정보 조회 (userId + feedId 기준)
+    public Like findLikeByUserAndFeed(String userId, String feedId) {
         Key key = Key.builder()
                 .partitionValue("USER#" + userId)
                 .sortValue("LIKE#" + feedId)
                 .build();
-    
-        Like like = likeTable.getItem(r -> r.key(key));
-        return like != null;
-    }
-    //사용자가 좋아요 눌렀는지 확인하고 like객체 반환 위에랑 중복되긴함
-    public Like findLikeByUserAndFeed(String userId, String feedId) { 
-        Key key = Key.builder() 
-            .partitionValue("USER#" + userId)
-            .sortValue("LIKE#" + feedId)
-            .build();
-        
         return likeTable.getItem(r -> r.key(key));
     }
+
+    // 좋아요 삭제
+    public void delete(Like like) {
+        Key key = Key.builder()
+                .partitionValue(like.getPk())
+                .sortValue(like.getSk())
+                .build();
+        likeTable.deleteItem(key);
+    }  
+
+    public List<Like> findAllByUserPk(String userPk) {
+    return likeTable.scan()
+        .items()
+        .stream()
+        .filter(like -> like.getPk().equals(userPk))
+        .collect(Collectors.toList());
+}
 
 }
 

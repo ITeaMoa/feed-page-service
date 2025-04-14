@@ -3,7 +3,7 @@ package com.example.demo.controller;
 
 
 import java.util.List;
-import java.util.Map;
+
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.ApplicationDto;
-import com.example.demo.entity.Application;
+
 import com.example.demo.service.ApplicationService;
 
 @RestController
@@ -54,6 +54,20 @@ public ResponseEntity<String> cancelApplication(
 ) {
     applicationService.cancelApplication(userId, feedId);
     return ResponseEntity.ok("신청이 성공적으로 취소되었습니다.");
+}
+
+// 수락목록록
+@GetMapping("/applications/accepted")
+public ResponseEntity<List<ApplicationDto>> getAcceptedApplications(@RequestParam("userId") String userId) {
+    List<ApplicationDto> applications = applicationService.getAcceptedApplications(userId);
+    return ResponseEntity.ok(applications);
+}
+
+// 거절목록록
+@GetMapping("/applications/rejected")
+public ResponseEntity<List<ApplicationDto>> getRejectedApplications(@RequestParam("userId") String userId) {
+    List<ApplicationDto> applications = applicationService.getRejectedApplications(userId);
+    return ResponseEntity.ok(applications);
 }
 
 }

@@ -1,23 +1,39 @@
 package com.example.demo.entity;
 
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbConvertedBy;
+import java.time.LocalDateTime;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import software.amazon.awssdk.enhanced.dynamodb.AttributeConverter;
 import software.amazon.awssdk.enhanced.dynamodb.AttributeValueType;
 import software.amazon.awssdk.enhanced.dynamodb.EnhancedType;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbConvertedBy;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
-import java.time.LocalDateTime;
-
 @DynamoDbBean
-public class Comment {
-    private String commentId; //필요이유 사용자가 뭔 댓글을 적었는지 구분 필요
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+public class ReplyEntity {
+    private String pk; // FEED#<FeedID>
+    private String sk; // COMMENT#<CommentID>#REPLY#<ReplyID>#<Timestamp>
+    private String entityType = "REPLY";
+    private String feedId;
+    private String commentId;
+    private String replyId;
     private String userId;
-    private String comment;
+    private String content;
     private LocalDateTime timestamp;
     private String nickname;
     private Boolean userStatus;
+
 
     @DynamoDbAttribute("userStatus") 
     public Boolean getUserStatus() {
@@ -27,23 +43,37 @@ public class Comment {
     public void setUserStatus(Boolean userStatus) {
         this.userStatus = userStatus;
     }
+    
+    @DynamoDbPartitionKey
+    @DynamoDbAttribute("Pk")
+    public String getPk() {
+        return pk;
+    }
 
-    @DynamoDbAttribute("commentId")  
+    @DynamoDbSortKey
+    @DynamoDbAttribute("Sk")
+    public String getSk() {
+        return sk;
+    }
+
+    @DynamoDbAttribute("entityType")
+    public String getEntityType() {
+        return entityType;
+    }
+
+    @DynamoDbAttribute("feedId")
+    public String getFeedId() {
+        return feedId;
+    }
+
+    @DynamoDbAttribute("commentId")
     public String getCommentId() {
         return commentId;
     }
 
-    public void setCommentId(String commentId) {
-        this.commentId = commentId;
-    }
-    
-    @DynamoDbAttribute("nickname")
-    public String getNickname() { 
-        return nickname;
-    }
-
-    public void setNickname(String nickname) { 
-        this.nickname = nickname;
+    @DynamoDbAttribute("replyId")
+    public String getReplyId() {
+        return replyId;
     }
 
     @DynamoDbAttribute("userId")
@@ -51,17 +81,9 @@ public class Comment {
         return userId;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    @DynamoDbAttribute("comment")
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
+    @DynamoDbAttribute("content")
+    public String getContent() {
+        return content;
     }
 
     @DynamoDbConvertedBy(LocalDateTimeConverter.class)
@@ -70,11 +92,11 @@ public class Comment {
         return timestamp;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
+    @DynamoDbAttribute("nickname")
+    public String getNickname() {
+        return nickname;
     }
 
-     //localDateTime객체를 다이나모 디비에서 문자열로 저장하고 다시 변환할수있게 하는 클래스
     public static class LocalDateTimeConverter implements AttributeConverter<LocalDateTime> {
 
         @Override
@@ -103,4 +125,6 @@ public class Comment {
             return AttributeValueType.S; // DynamoDB에서 문자열로 처리
         }
     }
+
+    
 }

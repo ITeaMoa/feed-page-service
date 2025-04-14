@@ -23,6 +23,25 @@ public class Application {
     private String part;  // 지원 분야
     private String status;  // 지원서 상태 (Pending, Accepted, Rejected)
     private LocalDateTime timestamp;  // 신청 시간
+    private String creatorId;      // 신청자 ID
+    private Boolean userStatus;
+
+    @DynamoDbAttribute("creatorId")
+    public String getCreatorId() {
+        return creatorId;
+    }
+    public void setCreatorId(String creatorId) {
+        this.creatorId = creatorId;
+    }
+
+    @DynamoDbAttribute("userStatus")
+    public Boolean getUserStatus() {
+        return userStatus;
+    }
+
+    public void setUserStatus(Boolean userStatus) {
+        this.userStatus = userStatus;
+    }
 
    
 
