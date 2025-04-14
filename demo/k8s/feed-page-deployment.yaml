@@ -1,23 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: feedpage-service-deployment
-  namespace: feed-namespace  # Match the Fargate namespace
+  name: feedpage-deployment
+  namespace: feedpage-namespace  # Match the Fargate namespace
   labels:
-    app: fargate
-    svc: feed
+    svc: feedpage
 spec:
   replicas: 1  # pods running the service
   selector:
     matchLabels:
-      app: fargate
-      svc: feed
+      svc: feedpage
   template:
     metadata:
       labels:
-        app: fargate
-        svc: feed
+        svc: feedpage
     spec:
+      imagePullSecrets: 
+        - name: ecr-registry-secret
       containers:
       - name: feedpage-service
         image: 970547342771.dkr.ecr.ap-northeast-2.amazonaws.com/iteamoa/feedpage:latest
