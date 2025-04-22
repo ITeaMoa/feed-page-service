@@ -16,7 +16,7 @@ spec:
         svc: feedpage
     spec:
       imagePullSecrets: 
-        - name: ecr-registry-secret
+        - name: ecr-secret
       containers:
       - name: feedpage-service
         image: 970547342771.dkr.ecr.ap-northeast-2.amazonaws.com/iteamoa/feedpage:latest
