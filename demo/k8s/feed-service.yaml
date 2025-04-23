@@ -10,6 +10,6 @@ spec:
     svc: feedpage
   ports:
     - protocol: TCP
-      port: 80             # Public-facing port/Service port
+      port: 8080             # Public-facing port/Service port
       targetPort: 8080       # Container port
   type: ClusterIP            # Exposes the service
