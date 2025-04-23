@@ -4,16 +4,16 @@ metadata:
   name: feedpage
   namespace: feedpage-namespace  
   labels:
-    svc: feedpage
+    app: feedpage
 spec:
   replicas: 1  # pods running the service
   selector:
     matchLabels:
-      svc: feedpage
+      app: feedpage
   template:
     metadata:
       labels:
-        svc: feedpage
+        app: feedpage
     spec:
       imagePullSecrets: 
         - name: ecr-secret

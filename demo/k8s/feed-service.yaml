@@ -4,10 +4,10 @@ metadata:
   name: feedpage
   namespace: feedpage-namespace
   labels:
-    svc: feedpage
+    app: feedpage
 spec:
   selector:
-    svc: feedpage
+    app: feedpage
   ports:
     - protocol: TCP
       port: 8080             # Public-facing port/Service port
