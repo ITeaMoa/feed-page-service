@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: feedpage-deployment
+  name: feedpage
   namespace: feedpage-namespace  # Match the Fargate namespace
   labels:
     svc: feedpage
