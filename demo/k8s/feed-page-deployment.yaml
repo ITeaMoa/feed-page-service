@@ -21,4 +21,4 @@ spec:
       - name: feedpage-service
         image: 970547342771.dkr.ecr.ap-northeast-2.amazonaws.com/iteamoa/feedpage:latest
         ports:
-        - containerPort: 8080  # Check container's exposed port 
+        - containerPort: 80  # Check container's exposed port 
