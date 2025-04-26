@@ -12,5 +12,5 @@ spec:
     - protocol: TCP
       port: 80            # Public-facing port/Service port
       targetPort: 8080       # Container port
-      nodePort: 30081
-  type: NodePort            # Exposes the service
+      # nodePort: 30081
+  type: LoadBalancer            # Exposes the service
