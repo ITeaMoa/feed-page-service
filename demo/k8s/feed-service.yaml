@@ -10,6 +10,6 @@ spec:
     app: feedpage
   ports:
     - protocol: TCP
-      port: 808            # Public-facing port/Service port
+      port: 80            # Public-facing port/Service port
       targetPort: 80       # Container port
   type: NodePort            # Exposes the service
