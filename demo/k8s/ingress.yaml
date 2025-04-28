@@ -24,4 +24,26 @@
 #             name: feedpage-service
 #             port:
 #               number: 80
-      
+
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: feedpage-ingress
+  namespace: feedpage-namespace
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  ingressClassName: nginx 
+  rules:
+    - host: api-iteamoa.brynnpark.cloud
+      http:
+        paths:
+        - path: /feed
+          pathType: Prefix
+          backend:
+            service:
+              name: feedpage-svc
+              port:
+                number: 80
+                # This is the port that the feedpage service is listening on (첨에 이거 80으로 해서 안됨)
