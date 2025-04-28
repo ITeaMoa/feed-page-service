@@ -13,4 +13,4 @@ spec:
       port: 80            # Public-facing port/Service port
       targetPort: 8080       # Container port
       nodePort: 30002
-  type: LoadBalancer            # Exposes the service
+  type: NodePort            # Exposes the service
