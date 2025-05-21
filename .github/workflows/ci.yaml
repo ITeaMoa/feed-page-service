@@ -23,7 +23,7 @@ jobs:
       - name: Build JAR
         run: |
           cd demo
-          ./gradlew build
+          ./gradlew clean build
         
       - name: Log in to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
@@ -35,7 +35,6 @@ jobs:
             --build-arg AWS_DYNAMODB_TABLE=${{ secrets.AWS_DYNAMODB_TABLE }} \
             --build-arg AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
             --build-arg AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
-            -f demo/Dockerfile \
             -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/iteamoa/feedpage:latest \
             .
 
