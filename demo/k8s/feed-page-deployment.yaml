@@ -1,25 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: feedpage-service-deployment
-  namespace: feed-namespace  # Match the Fargate namespace
+  name: feedpage
+  namespace: feedpage-namespace  
   labels:
-    app: fargate
-    svc: feed
+    app: feedpage
 spec:
   replicas: 1  # pods running the service
   selector:
     matchLabels:
-      app: fargate
-      svc: feed
+      app: feedpage
   template:
     metadata:
       labels:
-        app: fargate
-        svc: feed
+        app: feedpage
     spec:
+      imagePullSecrets: 
+        - name: ecr-secret
       containers:
       - name: feedpage-service
         image: 970547342771.dkr.ecr.ap-northeast-2.amazonaws.com/iteamoa/feedpage:latest
         ports:
-        - containerPort: 8080  # Check container's exposed port 
+        - containerPort: 80  # Check container's exposed port 
