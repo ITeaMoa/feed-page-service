@@ -29,15 +29,15 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build Docker image
-        run: | # -f 안하면 오류남. 같은 dir 안에 있지 않아서 ㅠ
+        run: |
           docker build \
             --build-arg AWS_DEFAULT_REGION=${{ secrets.AWS_DEFAULT_REGION }} \
             --build-arg AWS_DYNAMODB_TABLE=${{ secrets.AWS_DYNAMODB_TABLE }} \
             --build-arg AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
             --build-arg AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
-            -f demo/Dockerfile \  
+            -f demo/Dockerfile \
             -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/iteamoa/feedpage:latest .
-            
+
       - name: Push Docker image to ECR
         run: |
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/iteamoa/feedpage:latest
+          docker push ${{ secrets.AWS_SECRET_ACCESS_KEY }}.dkr.ecr.ap-northeast-2.amazonaws.com/iteamoa/feedpage:latest
