@@ -29,7 +29,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build Docker image
-        run: |
+        run: |  # \이거 뒤에 공백있으면 안됨. 
           docker build \
             --build-arg AWS_DEFAULT_REGION=${{ secrets.AWS_DEFAULT_REGION }} \
             --build-arg AWS_DYNAMODB_TABLE=${{ secrets.AWS_DYNAMODB_TABLE }} \
@@ -40,4 +40,4 @@ jobs:
 
       - name: Push Docker image to ECR
         run: |
-          docker push ${{ secrets.AWS_SECRET_ACCESS_KEY }}.dkr.ecr.ap-northeast-2.amazonaws.com/iteamoa/feedpage:latest
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/iteamoa/feedpage:latest
