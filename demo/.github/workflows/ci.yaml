@@ -35,4 +35,3 @@ jobs:
       - name: Push Docker image to ECR
         run: |
           docker push ${{ secrets.AWS_SECRET_ACCESS_KEY }}.dkr.ecr.ap-northeast-2.amazonaws.com/iteamoa/feedpage:latest
-        
