@@ -2,12 +2,12 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: feedpage
-  namespace: feedpage-namespace  
+  namespace: feedpage-namespace
   labels:
     app: feedpage
 spec:
   revisionHistoryLimit: 1
-  replicas: 1  # pods running the service
+  replicas: 1 # pods running the service
   selector:
     matchLabels:
       app: feedpage
@@ -16,10 +16,10 @@ spec:
       labels:
         app: feedpage
     spec:
-      imagePullSecrets: 
+      imagePullSecrets:
         - name: ecr-secret
       containers:
-      - name: feedpage-service
-        image: 970547342771.dkr.ecr.ap-northeast-2.amazonaws.com/iteamoa/feedpage:latest
-        ports:
-        - containerPort: 80  # Check container's exposed port 
+        - name: feedpage-service
+          image: 970547342771.dkr.ecr.ap-northeast-2.amazonaws.com/iteamoa/feedpage:ef71fe1
+          ports:
+            - containerPort: 80 # Check container's exposed port 
