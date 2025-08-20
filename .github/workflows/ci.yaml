@@ -10,7 +10,7 @@ permissions:
 
 env:
   REGISTRY: iteamoa.kr.ncr.ntruss.com   # NCR registry host
-  IMAGE: feedpage                              # repo/image name in NCR         
+  IMAGE: feed                              # repo/image name in NCR         
 
 jobs:
   build-and-push:
@@ -70,7 +70,7 @@ jobs:
         run: |
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
-          git add demo/k8s/feed-page-deployment.yaml
+          git add demo/k8s/deployment.yaml
           git commit -m "Update feedpage image to ${SHORT_SHA}" || echo "No changes to commit"
           git push
 

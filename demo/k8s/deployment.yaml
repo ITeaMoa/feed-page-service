@@ -2,19 +2,19 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: feedpage-deployment
-  namespace: feedpage
+  namespace: feed
   labels:
-    app: feedpage
+    app: feed
 spec:
   revisionHistoryLimit: 1
   replicas: 1 # pods running the service
   selector:
     matchLabels:
-      app: feedpage
+      app: feed
   template:
     metadata:
       labels:
-        app: feedpage
+        app: feed
       annotations:
         sidecar.istio.io/proxyCPU: "50m"
         sidecar.istio.io/proxyMemory: "64Mi"
