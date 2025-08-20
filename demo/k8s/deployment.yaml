@@ -16,6 +16,9 @@ spec:
       labels:
         app: feed
       annotations:
+        proxy.istio.io/config: |
+          proxyMetadata:
+            HOLD_APPLICATION_UNTIL_PROXY_STARTS: "true"
         sidecar.istio.io/proxyCPU: "50m"
         sidecar.istio.io/proxyMemory: "64Mi"
         sidecar.istio.io/proxyCPULimit: "200m"
