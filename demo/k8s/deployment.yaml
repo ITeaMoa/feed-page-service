@@ -1,8 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: feedpage
-  namespace: feedpage-namespace
+  name: feedpage-deployment
+  namespace: feedpage
   labels:
     app: feedpage
 spec:
@@ -15,9 +15,14 @@ spec:
     metadata:
       labels:
         app: feedpage
+      annotations:
+        sidecar.istio.io/proxyCPU: "50m"
+        sidecar.istio.io/proxyMemory: "64Mi"
+        sidecar.istio.io/proxyCPULimit: "200m"
+        sidecar.istio.io/proxyMemoryLimit: "128Mi"  
     spec:
       imagePullSecrets:
-        - name: ecr-secret
+        - name: ncr-regcred
       containers:
         - name: feedpage-service
           image: 970547342771.dkr.ecr.ap-northeast-2.amazonaws.com/iteamoa/feedpage:ef71fe1
