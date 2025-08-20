@@ -72,7 +72,7 @@ jobs:
 
       - name: Update image in deployment manifest
         run: |
-          yq -i '.spec.template.spec.containers[0].image = "'"${REGISTRY}/${IMAGE}:${SHORT_SHA}"'"' k8s/deployment.yaml
+          yq -i '.spec.template.spec.containers[0].image = "'"${REGISTRY}/${IMAGE}:${SHORT_SHA}"'"' demo/k8s/deployment.yaml
       
       - name: Commit and push updated deployment
         run: |
