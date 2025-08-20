@@ -25,6 +25,6 @@ spec:
         - name: ncr-regcred
       containers:
         - name: feedpage-service
-          image: iteamoa.kr.ncr.ntruss.com/feed:6256247
+          image: iteamoa.kr.ncr.ntruss.com/feed:a9d577b
           ports:
             - containerPort: 80 # Check container's exposed port 
