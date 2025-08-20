@@ -40,6 +40,14 @@ jobs:
       - name: Set short SHA
         run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
+      - name: Build JAR
+        run: |
+          cd demo
+          ./gradlew clean build
+
+      - name: Verify jar exists
+        run: ls -l demo/build/libs
+
       # Single build+push (linux/amd64) FROM demo/ and demo/Dockerfile
       - name: Build and Push (linux/amd64)
         uses: docker/build-push-action@v6
