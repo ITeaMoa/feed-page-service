@@ -20,7 +20,7 @@ ENV AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
 COPY build/libs/*SNAPSHOT.jar app.jar
 
 # Expose the port your application will run on
-EXPOSE 8080
+EXPOSE 80
 
 # 애플리케이션 실행 명령어 설정
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
