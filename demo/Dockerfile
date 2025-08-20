@@ -17,10 +17,10 @@ ENV AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
 ENV AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
 
 # 애플리케이션 jar 파일을 컨테이너로 복사
-COPY build/libs/*-SNAPSHOT.jar ./app.jar
+COPY build/libs/*SNAPSHOT.jar app.jar
 
 # Expose the port your application will run on
 EXPOSE 8080
 
 # 애플리케이션 실행 명령어 설정
-ENTRYPOINT ["java", "-jar", "app/app.jar"]
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
