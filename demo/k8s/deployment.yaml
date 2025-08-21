@@ -30,4 +30,4 @@ spec:
         - name: feedpage-service
           image: iteamoa.kr.ncr.ntruss.com/feed:5a86424
           ports:
-            - containerPort: 80 # Check container's exposed port 
+            - containerPort: 8080 # Check container's exposed port 
